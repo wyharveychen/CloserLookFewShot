@@ -1,5 +1,5 @@
 # A Closer Look at Few-shot Classification
-Source code to ICLR'19, 'A Closer Look at Few-shot Classification' (under construction)
+Source code to ICLR'19, 'A Closer Look at Few-shot Classification' (still under construction)
 
 A detailed empirical study in few-shot classification with an integrated testbed
 
