@@ -6,7 +6,6 @@ import torch.nn as nn
 import math
 import numpy as np
 import torch.nn.functional as F
-from torch.nn.utils.weight_norm import WeightNorm
 
 # Basic ResNet model
 
@@ -19,33 +18,10 @@ def init_layer(L):
         L.weight.data.fill_(1)
         L.bias.data.fill_(0)
 
-class WeightNormSimple(WeightNorm): #just use it to normalize weight, no scalar
-    def compute_weight(self, module):
-        v = getattr(module, self.name + '_v')
-        return v / _norm(v, self.dim)
-
-def weight_norm_simple(module, name='weight', dim=0):
-    WeightNormSimple.apply(module, name, dim)
-    return module
-
-def _norm(p, dim):
-    """Computes the norm over all dimensions except dim"""
-    if dim is None:
-        return p.norm()
-    elif dim == 0:
-        output_size = (p.size(0),) + (1,) * (p.dim() - 1)
-        return p.contiguous().view(p.size(0), -1).norm(dim=1).view(*output_size)
-    elif dim == p.dim() - 1:
-        output_size = (1,) * (p.dim() - 1) + (p.size(-1),)
-        return p.contiguous().view(-1, p.size(-1)).norm(dim=0).view(*output_size)
-    else:
-        return _norm(p.transpose(0, dim), 0).transpose(0, dim)
-
 class distLinear(nn.Module):
     def __init__(self, indim, outdim):
         super(distLinear, self).__init__()
         self.L = nn.Linear( indim, outdim, bias = False)
-        self.L_normalized = weight_norm_simple(self.L)
         self.relu = nn.ReLU()
 
     def forward(self, x):
