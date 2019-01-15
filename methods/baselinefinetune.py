@@ -6,7 +6,6 @@ import numpy as np
 import torch.nn.functional as F
 from methods.meta_template import MetaTemplate
 
-#from sklearn.neighbors import KNeighborsClassifier
 class BaselineFinetune(MetaTemplate):
     def __init__(self, model_func,  n_way, n_support, loss_type = "softmax"):
         super(BaselineFinetune, self).__init__( model_func,  n_way, n_support)
