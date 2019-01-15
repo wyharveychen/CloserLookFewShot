@@ -1,5 +1,5 @@
 # A Closer Look at Few-shot Classification
-Source code to ICLR'19, 'A Closer Look at Few-shot Classification' (still under construction)
+Source code to ICLR'19, 'A Closer Look at Few-shot Classification'
 
 This is a PyTorch implementation of our paper [A Closer Look at Few-shot Classification](https://openreview.net/pdf?id=HkxLXnAcFQ) accepted by ICLR 2019.
 
