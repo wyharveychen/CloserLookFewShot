@@ -1,13 +1,17 @@
 # A Closer Look at Few-shot Classification
 Source code to ICLR'19, 'A Closer Look at Few-shot Classification' (still under construction)
 
+This is a PyTorch implementation of our paper [A Closer Look at Few-shot Classification](https://openreview.net/pdf?id=HkxLXnAcFQ) accepted by ICLR 2019.
+
 A detailed empirical study in few-shot classification with an integrated testbed
 
 ## Enviroment
-Python3, require pytorch, json
+ - Python3
+ - [Pytorch](http://pytorch.org/)
+ - json
 
 ## Setting preparation
-First check dirs in `./configs.py` 
+First check and modify the dirs in `./configs.py` 
 
 #CUB
 * Change directory to `./filelists/CUB`
@@ -33,16 +37,20 @@ See test.json for reference
 * Put these file in the same folder and change data_dir['DATASETNAME'] in configs.py to the folder path  
 
 ## Train
-run `python ./train.py --dataset [DATASETNAME] --model [BACKBONENAME] --method [METHODNAME] [--OPTIONARG]`  
+Run
+```python ./train.py --dataset [DATASETNAME] --model [BACKBONENAME] --method [METHODNAME] [--OPTIONARG]```
 
 For example, run `python ./train.py --dataset miniImagenet --model Conv4 --method baseline --train_aug`  
 Commands below follow this example, and please refer to io_utils.py for more options
 
 ## Save features
 Save feature before classifaction layer to increase test speed, not applicable to MAML, but required for other methods  
-run `python ./save_features.py --dataset miniImagenet --model Conv4 --method baseline --train_aug`
+Run
+```python ./save_features.py --dataset miniImagenet --model Conv4 --method baseline --train_aug```
+
 ## Test
-run `python ./test.py --dataset miniImagenet --model Conv4 --method baseline --train_aug`
+Run
+```python ./test.py --dataset miniImagenet --model Conv4 --method baseline --train_aug```
 
 ## Reference
 This testbed has modified and integrated the following codes:
@@ -58,4 +66,8 @@ https://github.com/cbfinn/maml
 https://github.com/dragen1860/MAML-Pytorch  
 https://github.com/katerakelly/pytorch-maml
 
+## Citation
+Please cite the article:
 
+"A Closer Look at Few-shot Classification"
+Wei-Yu Chen, Yen-Cheng Liu, Zsolt Kira, Yu-Chiang Frank Wang, Jia-Bin Huang, ICLR'19
