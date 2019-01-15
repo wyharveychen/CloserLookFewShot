@@ -33,13 +33,13 @@ for dataset in dataset_list:
                 filelists[dataset][label] = []
                 fnames = listdir( join(train_path, label) )
                 fname_number = [ int(re.split('_|\.', fname)[1]) for fname in fnames]
-                sorted_fnames = zip( *sorted(  zip(fnames, fname_number), key = lambda f_tuple: f_tuple[1] ))[0]
+                sorted_fnames = list(zip( *sorted(  zip(fnames, fname_number), key = lambda f_tuple: f_tuple[1] )))[0]
                  
             fid = int(fid[-5:])-1
             fname = join( train_path,label, sorted_fnames[fid] )
             filelists[dataset][label].append(fname)
 
-    for key, filelist in filelists[dataset].iteritems():
+    for key, filelist in filelists[dataset].items():
         cl += 1
         random.shuffle(filelist)
         filelists_flat[dataset] += filelist
@@ -51,18 +51,21 @@ labellists_flat_all = labellists_flat['base'] + labellists_flat['val'] + labelli
 fo = open(savedir + "all.json", "w")
 fo.write('{"label_names": [')
 fo.writelines(['"%s",' % item  for item in folderlist])
-fo.seek(-1, os.SEEK_CUR)
+fo.seek(0, os.SEEK_END) 
+fo.seek(fo.tell()-1, os.SEEK_SET)
 fo.write('],')
 
 fo.write('"image_names": [')
 fo.writelines(['"%s",' % item  for item in filelists_flat_all])
-fo.seek(-1, os.SEEK_CUR)
+fo.seek(0, os.SEEK_END) 
+fo.seek(fo.tell()-1, os.SEEK_SET)
 fo.write('],')
 
 fo.write('"image_labels": [')
 fo.writelines(['%d,' % item  for item in labellists_flat_all])
-fo.seek(-1, os.SEEK_CUR)
+fo.seek(0, os.SEEK_END) 
+fo.seek(fo.tell()-1, os.SEEK_SET)
 fo.write(']}')
 
 fo.close()
-print "all -OK"
+print("all -OK")

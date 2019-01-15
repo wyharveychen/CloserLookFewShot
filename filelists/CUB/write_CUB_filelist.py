@@ -44,18 +44,21 @@ for dataset in dataset_list:
     fo = open(savedir + dataset + ".json", "w")
     fo.write('{"label_names": [')
     fo.writelines(['"%s",' % item  for item in folder_list])
-    fo.seek(-1, os.SEEK_CUR)
+    fo.seek(0, os.SEEK_END) 
+    fo.seek(fo.tell()-1, os.SEEK_SET)
     fo.write('],')
 
     fo.write('"image_names": [')
     fo.writelines(['"%s",' % item  for item in file_list])
-    fo.seek(-1, os.SEEK_CUR)
+    fo.seek(0, os.SEEK_END) 
+    fo.seek(fo.tell()-1, os.SEEK_SET)
     fo.write('],')
 
     fo.write('"image_labels": [')
     fo.writelines(['%d,' % item  for item in label_list])
-    fo.seek(-1, os.SEEK_CUR)
+    fo.seek(0, os.SEEK_END) 
+    fo.seek(fo.tell()-1, os.SEEK_SET)
     fo.write(']}')
 
     fo.close()
-    print "%s -OK" %dataset
+    print("%s -OK" %dataset)
