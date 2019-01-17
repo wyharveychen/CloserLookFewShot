@@ -47,6 +47,10 @@ Run
 Run
 ```python ./test.py --dataset miniImagenet --model Conv4 --method baseline --train_aug```
 
+## Results
+The test results would be recorded in `./record/results.txt`
+Also, we have put our source file of figure in the `./record` in case you want to add your result on it.
+
 ## Reference
 This testbed has modified and integrated the following codes:
 
