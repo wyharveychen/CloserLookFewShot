@@ -6,7 +6,8 @@ import json
 import random
 import re
 
-train_path = '/home/wyharveychen/Imagenet/ILSVRC2015/Data/CLS-LOC/train'
+cwd = os.getcwd() 
+data_path = join(cwd,'ILSVRC2015/Data/CLS-LOC/train')
 savedir = './'
 dataset_list = ['base', 'val', 'novel']
 
@@ -31,12 +32,12 @@ for dataset in dataset_list:
             if not label in filelists[dataset]:
                 folderlist.append(label)
                 filelists[dataset][label] = []
-                fnames = listdir( join(train_path, label) )
+                fnames = listdir( join(data_path, label) )
                 fname_number = [ int(re.split('_|\.', fname)[1]) for fname in fnames]
                 sorted_fnames = list(zip( *sorted(  zip(fnames, fname_number), key = lambda f_tuple: f_tuple[1] )))[0]
                  
             fid = int(fid[-5:])-1
-            fname = join( train_path,label, sorted_fnames[fid] )
+            fname = join( data_path,label, sorted_fnames[fid] )
             filelists[dataset][label].append(fname)
 
     for key, filelist in filelists[dataset].items():

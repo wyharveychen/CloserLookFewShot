@@ -1,5 +1,4 @@
-
-save_dir                    = '/work/newriver/wyharveychen/CloserLookFewShot/'
+save_dir                    = './record/'
 data_dir = {}
-data_dir['CUB']             = '/home/wyharveychen/CloserLookFewShot/filelists/CUB/' 
-data_dir['miniImagenet']   = '/home/wyharveychen/CloserLookFewShot/filelists/miniImagenet/' 
+data_dir['CUB']             = './filelists/CUB/' 
+data_dir['miniImagenet']    = './filelists/miniImagenet/' 

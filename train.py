@@ -19,15 +19,6 @@ from methods.relationnet import RelationNet
 from methods.maml import MAML
 from io_utils import model_dict, parse_args, get_resume_file  
 
-
-def adjust_learning_rate(optimizer, epoch, params):
-    lr = params.lr * (params.lr_decay ** (epoch // params.step_size))
-    if epoch<params.warmup_epochs:
-        lr = params.warmup_lr
-    for param_group in optimizer.param_groups:
-        param_group['lr'] = lr
-    
-
 def train(base_loader, val_loader, model, optimization, start_epoch, stop_epoch, params):    
     if optimization == 'Adam':
         optimizer = torch.optim.Adam(model.parameters())
