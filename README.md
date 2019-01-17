@@ -11,8 +11,6 @@ A detailed empirical study in few-shot classification with an integrated testbed
  - json
 
 ## Setting preparation
-First check and modify the dirs in `./configs.py` 
-
 #CUB
 * Change directory to `./filelists/CUB`
 * run `source ./download_CUB.sh`
