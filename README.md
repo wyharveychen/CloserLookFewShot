@@ -15,19 +15,14 @@ First check and modify the dirs in `./configs.py`
 
 #CUB
 * Change directory to `./filelists/CUB`
-* Download CUB-200-2011 from http://www.vision.caltech.edu/visipedia-data/CUB-200-2011/CUB_200_2011.tgz,
-* run `python ./write_CUB_filelist.py`  (check paths in it first)
+* run `source ./download_CUB.sh`
 
 #mini-ImageNet
 * Change directory to `./filelists/miniImagenet`
-* Download Imagenet from http://image-net.org/image/ILSVRC2015/ILSVRC2015_CLS-LOC.tar.gz
-* Download data-split from https://github.com/twitter/meta-learning-lstm/tree/master/data/miniImagenet
-* run `python ./write_miniImagenet_filelist.py` (check paths in it first) 
+* run `source ./download_miniImagenet.sh` (WARNING: This would download the 155G ImageNet dataset. You can comment out correponded lines in `./download_miniImagenet.sh` if you already have one.) 
 
 #mini-ImageNet->CUB
-* Finish preparation for `CUB and mini-ImageNet`
-* Change directory to ./filelists/miniImagenet 
-* run `python ./write_cross_filelist.py`  (check paths in it first)
+* Finish preparation for `CUB and mini-ImageNet` and you are done!
 
 #self-defined setting
 * Require 3 data split json file: 'base.json', 'val.json', 'novel.json' for each dataset  
