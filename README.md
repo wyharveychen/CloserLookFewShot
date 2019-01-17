@@ -22,7 +22,7 @@ A detailed empirical study in few-shot classification with an integrated testbed
 (WARNING: This would download the 155G ImageNet dataset. You can comment out correponded line 5-6 in `download_miniImagenet.sh` if you already have one.) 
 
 #mini-ImageNet->CUB
-* Finish preparation for `CUB and mini-ImageNet` and you are done!
+* Finish preparation for CUB and mini-ImageNet and you are done!
 
 #self-defined setting
 * Require 3 data split json file: 'base.json', 'val.json', 'novel.json' for each dataset  
