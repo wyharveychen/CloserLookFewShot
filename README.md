@@ -19,7 +19,9 @@ First check and modify the dirs in `./configs.py`
 
 #mini-ImageNet
 * Change directory to `./filelists/miniImagenet`
-* run `source ./download_miniImagenet.sh` (WARNING: This would download the 155G ImageNet dataset. You can comment out correponded lines in `./download_miniImagenet.sh` if you already have one.) 
+* run `source ./download_miniImagenet.sh` 
+
+(WARNING: This would download the 155G ImageNet dataset. You can comment out correponded lines in `./download_miniImagenet.sh` if you already have one.) 
 
 #mini-ImageNet->CUB
 * Finish preparation for `CUB and mini-ImageNet` and you are done!
