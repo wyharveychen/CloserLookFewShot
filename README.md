@@ -69,7 +69,7 @@ https://github.com/katerakelly/pytorch-maml
 Please use the bibtex:
 ```
 @inproceedings{
-chen2019a,
+chen2019closer,
 title={A Closer Look at Few-shot Classification},
 author={Wei-Yu Chen and Yen-Cheng Liu and Zsolt Kira and Yu-Chiang Frank Wang and Jia-Bin Huang},
 booktitle={International Conference on Learning Representations},
