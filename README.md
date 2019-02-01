@@ -24,6 +24,15 @@ A detailed empirical study in few-shot classification with an integrated testbed
 #mini-ImageNet->CUB
 * Finish preparation for CUB and mini-ImageNet and you are done!
 
+#omniglot(extra experiment in camera-ready version)
+* Change directory to `./filelists/omniglot`
+* run `source ./download_omniglot.sh` 
+
+#omniglot->emnist
+* Finish preparation for omniglot first
+* Change directory to `./filelists/emnist`
+* run `source ./download_emnist.sh`  
+
 #self-defined setting
 * Require 3 data split json file: 'base.json', 'val.json', 'novel.json' for each dataset  
 * The format should look like  
