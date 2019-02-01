@@ -45,9 +45,16 @@ if __name__ == '__main__':
     assert params.method != 'maml' and params.method != 'maml_approx', 'maml do not support save_feature and run'
 
     if 'Conv' in params.model:
-        image_size = 84 
+        if params.dataset in ['omniglot', 'cross_char']:
+            image_size = 28
+        else:
+            image_size = 84 
     else:
         image_size = 224
+
+    if params.dataset in ['omniglot', 'cross_char']:
+        assert params.model == 'Conv4' and not params.train_aug ,'omniglot only support Conv4 without augmentation'
+        params.model = 'Conv4S'
 
     split = params.split
     if params.dataset == 'cross':
@@ -55,6 +62,11 @@ if __name__ == '__main__':
             loadfile = configs.data_dir['miniImagenet'] + 'all.json' 
         else:
             loadfile   = configs.data_dir['CUB'] + split +'.json' 
+    elif params.dataset == 'cross_char':
+        if split == 'base':
+            loadfile = configs.data_dir['omniglot'] + 'noLatin.json' 
+        else:
+            loadfile  = configs.data_dir['emnist'] + split +'.json' 
     else:
         loadfile = configs.data_dir[params.dataset] + split + '.json'
 
@@ -84,6 +96,8 @@ if __name__ == '__main__':
             model = backbone.Conv4NP()
         elif params.model == 'Conv6': 
             model = backbone.Conv6NP()
+        elif params.model == 'Conv4S': 
+            model = backbone.Conv4SNP()
         else:
             model = model_dict[params.model]( flatten = False )
     elif params.method in ['maml' , 'maml_approx']: 

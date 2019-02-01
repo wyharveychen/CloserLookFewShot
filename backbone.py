@@ -32,7 +32,7 @@ class distLinear(nn.Module):
         L_norm = torch.norm(self.L.weight.data, p=2, dim =1).unsqueeze(1).expand_as(self.L.weight.data)
         self.L.weight.data = self.L.weight.data.div(L_norm + 0.00001)
         cos_dist = self.L(x_normalized) #matrix product by forward function
-        scores = 2* (cos_dist) #a fixed scale factor to scale the output of cos value into a reasonably large input for softmax
+        scores = 10* (cos_dist) #a fixed scale factor to scale the output of cos value into a reasonably large input for softmax
 
         return scores
 

@@ -55,14 +55,24 @@ if __name__=='__main__':
     if params.dataset == 'cross':
         base_file = configs.data_dir['miniImagenet'] + 'all.json' 
         val_file   = configs.data_dir['CUB'] + 'val.json' 
+    elif params.dataset == 'cross_char':
+        base_file = configs.data_dir['omniglot'] + 'noLatin.json' 
+        val_file   = configs.data_dir['emnist'] + 'val.json' 
     else:
         base_file = configs.data_dir[params.dataset] + 'base.json' 
         val_file   = configs.data_dir[params.dataset] + 'val.json' 
          
     if 'Conv' in params.model:
-        image_size = 84
+        if params.dataset in ['omniglot', 'cross_char']:
+            image_size = 28
+        else:
+            image_size = 84
     else:
         image_size = 224
+
+    if params.dataset in ['omniglot', 'cross_char']:
+        assert params.model == 'Conv4' and not params.train_aug ,'omniglot only support Conv4 without augmentation'
+        params.model = 'Conv4S'
 
     optimization = 'Adam'
 
@@ -98,6 +108,8 @@ if __name__=='__main__':
                 feature_model = backbone.Conv4NP
             elif params.model == 'Conv6': 
                 feature_model = backbone.Conv6NP
+            elif params.model == 'Conv4S': 
+                feature_model = backbone.Conv4SNP
             else:
                 feature_model = lambda: model_dict[params.model]( flatten = False )
             loss_type = 'mse' if params.method == 'relationnet' else 'softmax'
@@ -109,6 +121,10 @@ if __name__=='__main__':
             backbone.BottleneckBlock.maml = True
             backbone.ResNet.maml = True
             model           = MAML(  model_dict[params.model], approx = (params.method == 'maml_approx') , **train_few_shot_params )
+            if params.dataset in ['omniglot', 'cross_char']: #maml use different parameter in omniglot
+                model.n_task     = 32
+                model.task_update_num = 1
+                model.train_lr = 0.1
     else:
        raise ValueError('Unknown method')
 
