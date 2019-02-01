@@ -21,14 +21,14 @@ A detailed empirical study in few-shot classification with an integrated testbed
 
 (WARNING: This would download the 155G ImageNet dataset. You can comment out correponded line 5-6 in `download_miniImagenet.sh` if you already have one.) 
 
-#mini-ImageNet->CUB
+#mini-ImageNet->CUB (cross)
 * Finish preparation for CUB and mini-ImageNet and you are done!
 
-#omniglot (extra experiment in camera-ready version)
+#Omniglot
 * Change directory to `./filelists/omniglot`
 * run `source ./download_omniglot.sh` 
 
-#omniglot->emnist (extra experiment in camera-ready version)
+#Omniglot->EMNIST (cross_char)
 * Finish preparation for omniglot first
 * Change directory to `./filelists/emnist`
 * run `source ./download_emnist.sh`  
