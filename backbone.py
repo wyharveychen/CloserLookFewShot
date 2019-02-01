@@ -6,6 +6,7 @@ import torch.nn as nn
 import math
 import numpy as np
 import torch.nn.functional as F
+from torch.nn.utils.weight_norm import WeightNorm
 
 # Basic ResNet model
 
@@ -22,6 +23,7 @@ class distLinear(nn.Module):
     def __init__(self, indim, outdim):
         super(distLinear, self).__init__()
         self.L = nn.Linear( indim, outdim, bias = False)
+        WeightNorm.apply(self.L, 'weight', dim=0) #split the weight update component to direction and norm
         self.relu = nn.ReLU()
 
     def forward(self, x):
@@ -30,7 +32,7 @@ class distLinear(nn.Module):
         L_norm = torch.norm(self.L.weight.data, p=2, dim =1).unsqueeze(1).expand_as(self.L.weight.data)
         self.L.weight.data = self.L.weight.data.div(L_norm + 0.00001)
         cos_dist = self.L(x_normalized) #matrix product by forward function
-        scores = 2* cos_dist #a fixed scale factor to scale the output of cos value into a reasonably large input for softmax
+        scores = 2* (cos_dist) #a fixed scale factor to scale the output of cos value into a reasonably large input for softmax
 
         return scores
 
@@ -241,8 +243,6 @@ class BottleneckBlock(nn.Module):
 class ConvNet(nn.Module):
     def __init__(self, depth, flatten = True):
         super(ConvNet,self).__init__()
-        self.grads = []
-        self.fmaps = []
         trunk = []
         for i in range(depth):
             indim = 3 if i == 0 else 64
@@ -263,8 +263,6 @@ class ConvNet(nn.Module):
 class ConvNetNopool(nn.Module): #Relation net use a 4 layer conv with pooling in only first two layers, else no pooling
     def __init__(self, depth):
         super(ConvNetNopool,self).__init__()
-        self.grads = []
-        self.fmaps = []
         trunk = []
         for i in range(depth):
             indim = 3 if i == 0 else 64
@@ -279,14 +277,51 @@ class ConvNetNopool(nn.Module): #Relation net use a 4 layer conv with pooling in
         out = self.trunk(x)
         return out
 
+class ConvNetS(nn.Module): #For omniglot, only 1 input channel, output dim is 64
+    def __init__(self, depth, flatten = True):
+        super(ConvNetS,self).__init__()
+        trunk = []
+        for i in range(depth):
+            indim = 1 if i == 0 else 64
+            outdim = 64
+            B = ConvBlock(indim, outdim, pool = ( i <4 ) ) #only pooling for fist 4 layers
+            trunk.append(B)
+
+        if flatten:
+            trunk.append(Flatten())
+
+        self.trunk = nn.Sequential(*trunk)
+        self.final_feat_dim = 64
+
+    def forward(self,x):
+        out = x[:,0:1,:,:] #only use the first dimension
+        out = self.trunk(out)
+        return out
+
+class ConvNetSNopool(nn.Module): #Relation net use a 4 layer conv with pooling in only first two layers, else no pooling. For omniglot, only 1 input channel, output dim is [64,5,5]
+    def __init__(self, depth):
+        super(ConvNetSNopool,self).__init__()
+        trunk = []
+        for i in range(depth):
+            indim = 1 if i == 0 else 64
+            outdim = 64
+            B = ConvBlock(indim, outdim, pool = ( i in [0,1] ), padding = 0 if i in[0,1] else 1  ) #only first two layer has pooling and no padding
+            trunk.append(B)
+
+        self.trunk = nn.Sequential(*trunk)
+        self.final_feat_dim = [64,5,5]
+
+    def forward(self,x):
+        out = x[:,0:1,:,:] #only use the first dimension
+        out = self.trunk(out)
+        return out
+
 class ResNet(nn.Module):
     maml = False #Default
     def __init__(self,block,list_of_num_layers, list_of_out_dims, flatten = True):
         # list_of_num_layers specifies number of layers in each stage
         # list_of_out_dims specifies number of output channel for each stage
         super(ResNet,self).__init__()
-        self.grads = []
-        self.fmaps = []
         assert len(list_of_num_layers)==4, 'Can have only four stages'
         if self.maml:
             conv1 = Conv2d_fw(3, 64, kernel_size=7, stride=2, padding=3,
@@ -340,6 +375,12 @@ def Conv4NP():
 
 def Conv6NP():
     return ConvNetNopool(6)
+
+def Conv4S():
+    return ConvNetS(4)
+
+def Conv4SNP():
+    return ConvNetSNopool(4)
 
 def ResNet10( flatten = True):
     return ResNet(SimpleBlock, [1,1,1,1],[64,128,256,512], flatten)
