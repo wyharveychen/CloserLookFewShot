@@ -24,11 +24,11 @@ A detailed empirical study in few-shot classification with an integrated testbed
 #mini-ImageNet->CUB
 * Finish preparation for CUB and mini-ImageNet and you are done!
 
-#omniglot(extra experiment in camera-ready version)
+#omniglot (extra experiment in camera-ready version)
 * Change directory to `./filelists/omniglot`
 * run `source ./download_omniglot.sh` 
 
-#omniglot->emnist
+#omniglot->emnist (extra experiment in camera-ready version)
 * Finish preparation for omniglot first
 * Change directory to `./filelists/emnist`
 * run `source ./download_emnist.sh`  
