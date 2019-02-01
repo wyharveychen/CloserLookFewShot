@@ -64,7 +64,7 @@ This testbed has modified and integrated the following codes:
 
 * Framework, Backbone, Method: Matching Network
 https://github.com/facebookresearch/low-shot-shrink-hallucinate 
-* Method: Prototypical Network
+* Omniglot dataset, Method: Prototypical Network
 https://github.com/jakesnell/prototypical-networks
 * Method: Relational Network
 https://github.com/floodsung/LearningToCompare_FSL
