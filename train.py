@@ -152,14 +152,16 @@ if __name__=='__main__':
             model.load_state_dict(tmp['state'])
     elif params.warmup: #We also support warmup from pretrained baseline feature, but we never used in our paper
         baseline_checkpoint_dir = '%s/checkpoints/%s/%s_%s' %(configs.save_dir, params.dataset, params.model, 'baseline')
+        if params.train_aug:
+            baseline_checkpoint_dir += '_aug'
         warmup_resume_file = get_resume_file(baseline_checkpoint_dir)
         tmp = torch.load(warmup_resume_file)
         if tmp is not None: 
             state = tmp['state']
             state_keys = list(state.keys())
             for i, key in enumerate(state_keys):
-                if "module.feature." in key:
-                    newkey = key.replace("module.feature.","")  # an architecture model has attribute 'feature', load architecture feature to backbone by casting name from 'feature.trunk.xx' to 'trunk.xx'  
+                if "feature." in key:
+                    newkey = key.replace("feature.","")  # an architecture model has attribute 'feature', load architecture feature to backbone by casting name from 'feature.trunk.xx' to 'trunk.xx'  
                     state[newkey] = state.pop(key)
                 else:
                     state.pop(key)
