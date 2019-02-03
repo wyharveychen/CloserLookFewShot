@@ -10,29 +10,29 @@ A detailed empirical study in few-shot classification with an integrated testbed
  - json
 
 ## Setting preparation
-#CUB
+### CUB
 * Change directory to `./filelists/CUB`
 * run `source ./download_CUB.sh`
 
-#mini-ImageNet
+### mini-ImageNet
 * Change directory to `./filelists/miniImagenet`
 * run `source ./download_miniImagenet.sh` 
 
 (WARNING: This would download the 155G ImageNet dataset. You can comment out correponded line 5-6 in `download_miniImagenet.sh` if you already have one.) 
 
-#mini-ImageNet->CUB (cross)
+### mini-ImageNet->CUB (cross)
 * Finish preparation for CUB and mini-ImageNet and you are done!
 
-#Omniglot
+### Omniglot
 * Change directory to `./filelists/omniglot`
 * run `source ./download_omniglot.sh` 
 
-#Omniglot->EMNIST (cross_char)
+### Omniglot->EMNIST (cross_char)
 * Finish preparation for omniglot first
 * Change directory to `./filelists/emnist`
 * run `source ./download_emnist.sh`  
 
-#self-defined setting
+### self-defined setting
 * Require 3 data split json file: 'base.json', 'val.json', 'novel.json' for each dataset  
 * The format should look like  
 {"label_names": ["class0","class1",...], "image_names": ["filepath1","filepath2",...],"image_labels":[l1,l2,l3,...]}  
