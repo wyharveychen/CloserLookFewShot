@@ -79,7 +79,7 @@ Please use the bibtex:
 @inproceedings{
 chen2019closerfewshot,
 title={A Closer Look at Few-shot Classification},
-author={Wei-Yu Chen and Yen-Cheng Liu and Zsolt Kira and Yu-Chiang Frank Wang and Jia-Bin Huang},
+author={Chen, Wei-Yu and Liu, Yen-Cheng and Kira, Zsolt and Wang, Yu-Chiang and  Huang, Jia-Bin},
 booktitle={International Conference on Learning Representations},
 year={2019}
 }
