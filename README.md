@@ -4,7 +4,7 @@ This repo contains the reference source code for the paper [A Closer Look at Few
 
 
 ## Citation
-If you find our code, please the work using the bibtex:
+If you find our code useful, please consider citing our work using the bibtex:
 ```
 @inproceedings{
 chen2019closerfewshot,
