@@ -36,7 +36,7 @@ def train(base_loader, val_loader, model, optimization, start_epoch, stop_epoch,
             os.makedirs(params.checkpoint_dir)
 
         acc = model.test_loop( val_loader)
-        if acc > max_acc :
+        if acc > max_acc : #for baseline and baseline++, we don't use validation here so we let acc = -1
             print("best model! save...")
             max_acc = acc
             outfile = os.path.join(params.checkpoint_dir, 'best_model.tar')
@@ -80,7 +80,12 @@ if __name__=='__main__':
         base_datamgr    = SimpleDataManager(image_size, batch_size = 16)
         base_loader     = base_datamgr.get_data_loader( base_file , aug = params.train_aug )
         val_datamgr     = SimpleDataManager(image_size, batch_size = 64)
-        val_loader      = val_datamgr.get_data_loader( val_file, aug = False) 
+        val_loader      = val_datamgr.get_data_loader( val_file, aug = False)
+        
+        if params.dataset == 'omniglot':
+            assert params.num_classes >= 4112, 'class number need to be larger than max label id in base class'
+        if params.dataset == 'cross_char':
+            assert params.num_classes >= 1597, 'class number need to be larger than max label id in base class'
 
         if params.method == 'baseline':
             model           = BaselineTrain( model_dict[params.model], params.num_classes)

@@ -24,7 +24,10 @@ class distLinear(nn.Module):
         super(distLinear, self).__init__()
         self.L = nn.Linear( indim, outdim, bias = False)
         WeightNorm.apply(self.L, 'weight', dim=0) #split the weight update component to direction and norm
-        self.relu = nn.ReLU()
+        if outdim <=200:
+            self.scale_factor = 2; #a fixed scale factor to scale the output of cos value into a reasonably large input for softmax
+        else:
+            self.scale_factor = 10; #in omniglot, a larger scale factor is required to handle >1000 output classes.
 
     def forward(self, x):
         x_norm = torch.norm(x, p=2, dim =1).unsqueeze(1).expand_as(x)
@@ -32,7 +35,7 @@ class distLinear(nn.Module):
         L_norm = torch.norm(self.L.weight.data, p=2, dim =1).unsqueeze(1).expand_as(self.L.weight.data)
         self.L.weight.data = self.L.weight.data.div(L_norm + 0.00001)
         cos_dist = self.L(x_normalized) #matrix product by forward function
-        scores = 10* (cos_dist) #a fixed scale factor to scale the output of cos value into a reasonably large input for softmax
+        scores = self.scale_factor* (cos_dist) 
 
         return scores
 
