@@ -53,6 +53,10 @@ if __name__ == '__main__':
 
     few_shot_params = dict(n_way = params.test_n_way , n_support = params.n_shot) 
 
+    if params.dataset in ['omniglot', 'cross_char']:
+        assert params.model == 'Conv4' and not params.train_aug ,'omniglot only support Conv4 without augmentation'
+        params.model = 'Conv4S'
+
     if params.method == 'baseline':
         model           = BaselineFinetune( model_dict[params.model], **few_shot_params )
     elif params.method == 'baseline++':
@@ -66,6 +70,8 @@ if __name__ == '__main__':
             feature_model = backbone.Conv4NP
         elif params.model == 'Conv6': 
             feature_model = backbone.Conv6NP
+        elif params.model == 'Conv4S': 
+            feature_model = backbone.Conv4SNP
         else:
             feature_model = lambda: model_dict[params.model]( flatten = False )
         loss_type = 'mse' if params.method == 'relationnet' else 'softmax'
@@ -76,6 +82,10 @@ if __name__ == '__main__':
         backbone.BottleneckBlock.maml = True
         backbone.ResNet.maml = True
         model = MAML(  model_dict[params.model], approx = (params.method == 'maml_approx') , **few_shot_params )
+        if params.dataset in ['omniglot', 'cross_char']: #maml use different parameter in omniglot
+            model.n_task     = 32
+            model.task_update_num = 1
+            model.train_lr = 0.1
     else:
        raise ValueError('Unknown method')
 
@@ -99,9 +109,16 @@ if __name__ == '__main__':
             model.load_state_dict(tmp['state'])
 
     split = params.split
+    if params.save_iter != -1:
+        split_str = split + "_" +str(params.save_iter)
+    else:
+        split_str = split
     if params.method in ['maml', 'maml_approx']: #maml do not support testing with feature
         if 'Conv' in params.model:
-            image_size = 84 
+            if params.dataset in ['omniglot', 'cross_char']:
+                image_size = 28
+            else:
+                image_size = 84 
         else:
             image_size = 224
 
@@ -112,6 +129,11 @@ if __name__ == '__main__':
                 loadfile = configs.data_dir['miniImagenet'] + 'all.json' 
             else:
                 loadfile   = configs.data_dir['CUB'] + split +'.json'
+        elif params.dataset == 'cross_char':
+            if split == 'base':
+                loadfile = configs.data_dir['omniglot'] + 'noLatin.json' 
+            else:
+                loadfile  = configs.data_dir['emnist'] + split +'.json' 
         else: 
             loadfile    = configs.data_dir[params.dataset] + split + '.json'
 
@@ -122,7 +144,7 @@ if __name__ == '__main__':
         acc_mean, acc_std = model.test_loop( novel_loader, return_std = True)
 
     else:
-        novel_file = os.path.join( checkpoint_dir.replace("checkpoints","features"), split +".hdf5") #defaut split = novel, but you can also test base or val classes
+        novel_file = os.path.join( checkpoint_dir.replace("checkpoints","features"), split_str +".hdf5") #defaut split = novel, but you can also test base or val classes
         cl_data_file = feat_loader.init_loader(novel_file)
 
         for i in range(iter_num):
@@ -137,6 +159,9 @@ if __name__ == '__main__':
         timestamp = time.strftime("%Y%m%d-%H%M%S", time.localtime()) 
         aug_str = '-aug' if params.train_aug else ''
         aug_str += '-adapted' if params.adaptation else ''
-        exp_setting = '%s-%s-%s%s %sway_train %sway_test' %(params.dataset, params.model, params.method, aug_str , params.train_n_way, params.test_n_way )
+        if params.method in ['baseline', 'baseline++'] :
+            exp_setting = '%s-%s-%s-%s%s %sshot %sway_test' %(params.dataset, split_str, params.model, params.method, aug_str, params.n_shot, params.test_n_way )
+        else:
+            exp_setting = '%s-%s-%s-%s%s %sshot %sway_train %sway_test' %(params.dataset, split_str, params.model, params.method, aug_str , params.n_shot , params.train_n_way, params.test_n_way )
         acc_str = '%d Test Acc = %4.2f%% +- %4.2f%%' %(iter_num, acc_mean, 1.96* acc_std/np.sqrt(iter_num))
         f.write( 'Time: %s, Setting: %s, Acc: %s \n' %(timestamp,exp_setting,acc_str)  )
