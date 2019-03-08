@@ -122,7 +122,10 @@ if __name__ == '__main__':
         acc_mean, acc_std = model.test_loop( novel_loader, return_std = True)
 
     else:
-        novel_file = os.path.join( checkpoint_dir.replace("checkpoints","features"), split +".hdf5") #defaut split = novel, but you can also test base or val classes
+        if params.save_iter != -1:
+            novel_file = os.path.join( checkpoint_dir.replace("checkpoints","features"), split +'_'+str(params.save_iter)+".hdf5") 
+        else:
+            novel_file = os.path.join( checkpoint_dir.replace("checkpoints","features"), split +".hdf5") #defaut split = novel, but you can also test base or val classes
         cl_data_file = feat_loader.init_loader(novel_file)
 
         for i in range(iter_num):
