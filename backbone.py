@@ -34,7 +34,7 @@ class distLinear(nn.Module):
         x_normalized = x.div(x_norm+ 0.00001)
         L_norm = torch.norm(self.L.weight.data, p=2, dim =1).unsqueeze(1).expand_as(self.L.weight.data)
         self.L.weight.data = self.L.weight.data.div(L_norm + 0.00001)
-        cos_dist = self.L(x_normalized) #matrix product by forward function
+        cos_dist = self.L(x_normalized) #matrix product by forward function, but this also multiply the cosine distance by a class-wise learnable norm, see the issue#4 in the github
         scores = self.scale_factor* (cos_dist) 
 
         return scores
