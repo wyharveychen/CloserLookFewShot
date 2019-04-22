@@ -30,11 +30,11 @@ class MAML(MetaTemplate):
         assert is_feature == False, 'MAML do not support fixed feature' 
         x = x.cuda()
         x_var = Variable(x)
-        x_a_i = x_var[:,:self.n_support,:,:,:].contiguous().view( self.n_way* self.n_support, *x.size()[2:]) 
-        x_b_i = x_var[:,self.n_support:,:,:,:].contiguous().view( self.n_way* self.n_query,   *x.size()[2:]) 
-        y_a_i = Variable( torch.from_numpy( np.repeat(range( self.n_way ), self.n_support ) )).cuda()
+        x_a_i = x_var[:,:self.n_support,:,:,:].contiguous().view( self.n_way* self.n_support, *x.size()[2:]) #support data 
+        x_b_i = x_var[:,self.n_support:,:,:,:].contiguous().view( self.n_way* self.n_query,   *x.size()[2:]) #query data
+        y_a_i = Variable( torch.from_numpy( np.repeat(range( self.n_way ), self.n_support ) )).cuda() #label for support data
         
-        fast_parameters = list(self.parameters())
+        fast_parameters = list(self.parameters()) #the first gradient calcuated in line 45 is based on original weight
         for weight in self.parameters():
             weight.fast = None
         self.zero_grad()
@@ -42,16 +42,17 @@ class MAML(MetaTemplate):
         for task_step in range(self.task_update_num):
             scores = self.forward(x_a_i)
             set_loss = self.loss_fn( scores, y_a_i) 
-            grad = torch.autograd.grad(set_loss, fast_parameters, create_graph=True)
+            grad = torch.autograd.grad(set_loss, fast_parameters, create_graph=True) #build full graph support gradient of gradient
             if self.approx:
-                grad = [ g.detach()  for g in grad ]
+                grad = [ g.detach()  for g in grad ] #do not calculate gradient of gradient if using first order approximation
             fast_parameters = []
             for k, weight in enumerate(self.parameters()):
+                #for usage of weight.fast, please see Linear_fw, Conv_fw in backbone.py 
                 if weight.fast is None:
-                    weight.fast = weight - self.train_lr * grad[k] #link fast weight to weight 
+                    weight.fast = weight - self.train_lr * grad[k] #create weight.fast 
                 else:
-                    weight.fast = weight.fast - self.train_lr * grad[k]
-                fast_parameters.append(weight.fast)
+                    weight.fast = weight.fast - self.train_lr * grad[k] #create an updated weight.fast, note the '-' is not merely minus value, but to create a new weight.fast 
+                fast_parameters.append(weight.fast) #gradients calculated in line 45 are based on newest fast weight, but the graph will retain the link to old weight.fasts
 
         scores = self.forward(x_b_i)
         return scores
@@ -85,7 +86,7 @@ class MAML(MetaTemplate):
 
             task_count += 1
 
-            if task_count == self.n_task:
+            if task_count == self.n_task: #MAML update several tasks at one time
                 loss_q = torch.stack(loss_all).sum(0)
                 loss_q.backward()
 

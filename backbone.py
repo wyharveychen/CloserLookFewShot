@@ -59,7 +59,7 @@ class Linear_fw(nn.Linear): #used in MAML to forward input with fast weight
 
     def forward(self, x):
         if self.weight.fast is not None and self.bias.fast is not None:
-            out = F.linear(x, self.weight.fast, self.bias.fast)
+            out = F.linear(x, self.weight.fast, self.bias.fast) #weight.fast (fast weight) is the temporaily adapted weight
         else:
             out = super(Linear_fw, self).forward(x)
         return out
