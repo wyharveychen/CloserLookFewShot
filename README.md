@@ -17,7 +17,7 @@ year={2019}
 
 ## Enviroment
  - Python3
- - [Pytorch](http://pytorch.org/)
+ - [Pytorch](http://pytorch.org/) before 0.4 (for newer vesion, please see issue #3 )
  - json
 
 ## Getting started
