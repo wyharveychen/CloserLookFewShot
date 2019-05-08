@@ -52,6 +52,7 @@ if __name__=='__main__':
     np.random.seed(10)
     params = parse_args('train')
 
+
     if params.dataset == 'cross':
         base_file = configs.data_dir['miniImagenet'] + 'all.json' 
         val_file   = configs.data_dir['CUB'] + 'val.json' 
@@ -75,6 +76,25 @@ if __name__=='__main__':
         params.model = 'Conv4S'
 
     optimization = 'Adam'
+
+    if params.stop_epoch == -1: 
+        if params.method in ['baseline', 'baseline++'] :
+            if params.dataset in ['omniglot', 'cross_char']:
+                params.stop_epoch = 5
+            elif params.dataset in ['CUB']:
+                params.stop_epoch = 200 # This is different as stated in the open-review paper. However, using 400 epoch in baseline actually lead to over-fitting
+            elif params.dataset in ['miniImagenet', 'cross']:
+                params.stop_epoch = 400
+            else:
+                params.stop_epoch = 400 #default
+        else: #meta-learning methods
+            if params.n_shot == 1:
+                params.stop_epoch = 600
+            elif params.n_shot == 5:
+                params.stop_epoch = 400
+            else:
+                params.stop_epoch = 600 #default
+     
 
     if params.method in ['baseline', 'baseline++'] :
         base_datamgr    = SimpleDataManager(image_size, batch_size = 16)
