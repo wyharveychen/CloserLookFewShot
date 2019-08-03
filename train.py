@@ -36,7 +36,7 @@ def train(base_loader, val_loader, model, optimization, start_epoch, stop_epoch,
             os.makedirs(params.checkpoint_dir)
 
         acc = model.test_loop( val_loader)
-        if acc > max_acc : #for baseline and baseline++, we don't use validation here so we let acc = -1
+        if acc > max_acc : #for baseline and baseline++, we don't use validation in default and we let acc = -1, but we allow options to validate with DB index
             print("best model! save...")
             max_acc = acc
             outfile = os.path.join(params.checkpoint_dir, 'best_model.tar')

@@ -99,14 +99,13 @@ if __name__ == '__main__':
 
     #modelfile   = get_resume_file(checkpoint_dir)
 
-    if not params.method in ['baseline', 'baseline++'] : 
-        if params.save_iter != -1:
-            modelfile   = get_assigned_file(checkpoint_dir,params.save_iter)
-        else:
-            modelfile   = get_best_file(checkpoint_dir)
-        if modelfile is not None:
-            tmp = torch.load(modelfile)
-            model.load_state_dict(tmp['state'])
+    if params.save_iter != -1:
+        modelfile   = get_assigned_file(checkpoint_dir,params.save_iter)
+    else:
+        modelfile   = get_best_file(checkpoint_dir)
+    if modelfile is not None:
+        tmp = torch.load(modelfile)
+        model.load_state_dict(tmp['state'])
 
     split = params.split
     if params.save_iter != -1:

@@ -78,8 +78,8 @@ if __name__ == '__main__':
 
     if params.save_iter != -1:
         modelfile   = get_assigned_file(checkpoint_dir,params.save_iter)
-    elif params.method in ['baseline', 'baseline++'] :
-        modelfile   = get_resume_file(checkpoint_dir)
+#    elif params.method in ['baseline', 'baseline++'] :
+#        modelfile   = get_resume_file(checkpoint_dir) #comment in 2019/08/03 updates as the validation of baseline/baseline++ is added
     else:
         modelfile   = get_best_file(checkpoint_dir)
 
