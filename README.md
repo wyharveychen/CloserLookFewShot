@@ -86,13 +86,13 @@ https://github.com/katerakelly/pytorch-maml
 
 ## FAQ
 * Q1 Why some of my reproduced results for CUB dataset are around 4~5% with you reported result? (#31, #34, #42)
-A1 Sorry about my reported the results on the paper may run in different epochs or episodes, please see each issue for details.
+* A1 Sorry about my reported the results on the paper may run in different epochs or episodes, please see each issue for details.
 
 * Q2 Why some of my reproduced results for mini-ImageNet dataset are around 1~2% different with your reported results? (#17, #40, #41 #43)
-A2 Due to random initialization, each training process could lead to different accuracy. Also, each test time could lead to different accuracy.
+* A2 Due to random initialization, each training process could lead to different accuracy. Also, each test time could lead to different accuracy.
 
 * Q3 How do you decided the mean and the standard variation for dataset normalization? (#18, #39)
-A3 I use the mean and standard variation from ImageNet, but you can use the ones calculated from your own dataset. 
+* A3 I use the mean and standard variation from ImageNet, but you can use the ones calculated from your own dataset. 
 
 * Q4 Do you have the mini-ImageNet dataset available without downloading the whole ImageNet? (#45 #29)
-A4 You can use the dataset here https://github.com/oscarknagg/few-shot, but you will need to modify filelists/miniImagenet/write_miniImagenet_filelist.py.
+* A4 You can use the dataset here https://github.com/oscarknagg/few-shot, but you will need to modify filelists/miniImagenet/write_miniImagenet_filelist.py.
