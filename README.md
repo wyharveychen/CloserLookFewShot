@@ -72,6 +72,17 @@ Run
 * The test results will be recorded in `./record/results.txt`
 * For all the pre-computed results, please see `./record/few_shot_exp_figures.xlsx`. This will be helpful for including your own results for a fair comparison.
 
+## Docker
+If you want to use Docker, build the container with `docker build -t closerlookfewshot .`
+and execute commands with `docker run -v  $(pwd):/repo closerlookfewshot [command]`,
+e.g. `docker run -v  $(pwd):/repo closerlookfewshot python3 /repo/train.py --dataset CUB --model Conv4 --method baseline --train_aug`.
+
+If you have a GPU and CUDA and cudnn installed, use `nvidia-docker build -t closerlookfewshot -f Dockerfile-gpu .`
+and `nvidia-docker run -v  $(pwd):/repo closerlookfewshot [command]`,
+e.g. `nvidia-docker run -v  $(pwd):/repo closerlookfewshot python3 /repo/train.py --dataset CUB --model Conv4 --method baseline --train_aug`.
+Change the CUDA version in `10.2-cudnn7-runtime-ubuntu16.04` (`Dockerfile-gpu`) if you have another version than 10.2.
+
+
 ## References
 Our testbed builds upon several existing publicly available code. Specifically, we have modified and integrated the following code into this project:
 
