@@ -17,8 +17,10 @@ year={2019}
 
 ## Enviroment
  - Python3
- - [Pytorch](http://pytorch.org/) before 0.4 (for newer vesion, please see issue #3 )
+ - [Pytorch](http://pytorch.org/) >= 1.0
  - json
+
+To install the dependencies use `pip3 install -r requirements-cpu.txt -f https://download.pytorch.org/whl/torch_stable.html` or `pip3 install -r requirements-gpu.txt`.
 
 ## Getting started
 ### CUB

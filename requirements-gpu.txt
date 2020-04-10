@@ -1,0 +1,4 @@
+torch>=1.0.0
+torchvision
+Pillow
+h5py
