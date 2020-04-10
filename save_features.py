@@ -16,6 +16,7 @@ from methods.relationnet import RelationNet
 from methods.maml import MAML
 from io_utils import model_dict, parse_args, get_resume_file, get_best_file, get_assigned_file 
 
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 def save_features(model, data_loader, outfile ):
     f = h5py.File(outfile, 'w')
@@ -26,7 +27,7 @@ def save_features(model, data_loader, outfile ):
     for i, (x,y) in enumerate(data_loader):
         if i%10 == 0:
             print('{:d}/{:d}'.format(i, len(data_loader)))
-        x = x.cuda()
+        x = x.to(device)
         x_var = Variable(x)
         feats = model(x_var)
         if all_feats is None:
@@ -105,7 +106,8 @@ if __name__ == '__main__':
     else:
         model = model_dict[params.model]()
 
-    model = model.cuda()
+    if torch.cuda.is_available():
+        model = model.cuda()
     tmp = torch.load(modelfile)
     state = tmp['state']
     state_keys = list(state.keys())
