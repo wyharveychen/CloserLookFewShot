@@ -10,6 +10,8 @@ from methods.meta_template import MetaTemplate
 import utils
 import copy
 
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+
 class MatchingNet(MetaTemplate):
     def __init__(self, model_func,  n_way, n_support):
         super(MatchingNet, self).__init__( model_func,  n_way, n_support)
@@ -52,14 +54,14 @@ class MatchingNet(MetaTemplate):
         G, G_normalized = self.encode_training_set( z_support)
 
         y_s         = torch.from_numpy(np.repeat(range( self.n_way ), self.n_support ))
-        Y_S         = Variable( utils.one_hot(y_s, self.n_way ) ).cuda()
+        Y_S         = Variable( utils.one_hot(y_s, self.n_way ) ).to(device)
         f           = z_query
         logprobs = self.get_logprobs(f, G, G_normalized, Y_S)
         return logprobs
 
     def set_forward_loss(self, x):
         y_query = torch.from_numpy(np.repeat(range( self.n_way ), self.n_query ))
-        y_query = Variable(y_query.cuda())
+        y_query = Variable(y_query.to(device))
 
         logprobs = self.set_forward(x)
 
