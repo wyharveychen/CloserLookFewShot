@@ -17,8 +17,10 @@ year={2019}
 
 ## Enviroment
  - Python3
- - [Pytorch](http://pytorch.org/) before 0.4 (for newer vesion, please see issue #3 )
+ - [Pytorch](http://pytorch.org/) >= 1.0
  - json
+
+To install the dependencies use `pip3 install -r requirements-cpu.txt -f https://download.pytorch.org/whl/torch_stable.html` or `pip3 install -r requirements-gpu.txt`.
 
 ## Getting started
 ### CUB
@@ -52,7 +54,7 @@ See test.json for reference
 
 ## Train
 Run
-```python ./train.py --dataset [DATASETNAME] --model [BACKBONENAME] --method [METHODNAME] [--OPTIONARG]```
+```python3 ./train.py --dataset [DATASETNAME] --model [BACKBONENAME] --method [METHODNAME] [--OPTIONARG]```
 
 For example, run `python ./train.py --dataset miniImagenet --model Conv4 --method baseline --train_aug`  
 Commands below follow this example, and please refer to io_utils.py for additional options.
@@ -60,11 +62,11 @@ Commands below follow this example, and please refer to io_utils.py for addition
 ## Save features
 Save the extracted feature before the classifaction layer to increase test speed. This is not applicable to MAML, but are required for other methods.
 Run
-```python ./save_features.py --dataset miniImagenet --model Conv4 --method baseline --train_aug```
+```python3 ./save_features.py --dataset miniImagenet --model Conv4 --method baseline --train_aug```
 
 ## Test
 Run
-```python ./test.py --dataset miniImagenet --model Conv4 --method baseline --train_aug```
+```python3 ./test.py --dataset miniImagenet --model Conv4 --method baseline --train_aug```
 
 ## Results
 * The test results will be recorded in `./record/results.txt`
