@@ -23,6 +23,9 @@ year={2019}
 To install the dependencies use `pip3 install -r requirements-cpu.txt -f https://download.pytorch.org/whl/torch_stable.html` or `pip3 install -r requirements-gpu.txt`.
 
 ## Getting started
+### CIFAR-FS
+Download the data split by superclasses via [GDrive](https://drive.google.com/file/d/18-ZfEsFSiXcgf87UpvqkasukOPtjTs_1/view?usp=sharing).
+
 ### CUB
 * Change directory to `./filelists/CUB`
 * run `source ./download_CUB.sh`
