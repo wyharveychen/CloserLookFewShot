@@ -24,7 +24,8 @@ To install the dependencies use `pip3 install -r requirements-cpu.txt -f https:/
 
 ## Getting started
 ### CIFAR-FS
-Download the data split by superclasses via [GDrive](https://drive.google.com/file/d/18-ZfEsFSiXcgf87UpvqkasukOPtjTs_1/view?usp=sharing).
+* Change to directory ./filelists/CIFAR-FS
+* run `source ./download_Cifar.sh`
 
 ### CUB
 * Change directory to `./filelists/CUB`

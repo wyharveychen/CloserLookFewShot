@@ -18,7 +18,7 @@ import torchnet as tnt
 from PIL import Image
 
 # Set the appropriate paths of the datasets here.
-_CIFAR_FS_DATASET_DIR = '/home/azmkuu/Desktop/EPFL/OPTML/CloserLookFewShot/filelists/CIFAR-FS'
+_CIFAR_FS_DATASET_DIR = 'Cifar100BySuperclass/'
 
 
 def buildLabelIndex(labels):
@@ -150,17 +150,17 @@ class CIFAR_FS(data.Dataset):
     def __len__(self):
         return len(self.data)
 
-class CIFAR_FS_domain_shift(data.Dataset):
+class CIFARFSDomainShift(data.Dataset):
 
     def __init__(self, superclass_train, super_class_test, phase="train"):
         self.phase = phase
         train = load_data(os.path.join(
             _CIFAR_FS_DATASET_DIR,
-            f'cifar-by-superclass/superclass_{superclass_train}.pickle'))
+            f'superclass_{superclass_train}.pickle'))
         if superclass_train != super_class_test:
             test = load_data(os.path.join(
                 _CIFAR_FS_DATASET_DIR,
-                f'cifar-by-superclass/superclass_{superclass_train}.pickle'))
+                f'superclass_{superclass_train}.pickle'))
             self.x_test = test["data"]
             self.y_test = test["labels"]
             self.x_train = train["data"]
@@ -487,4 +487,4 @@ def split_in_superclasses():
             }, f)
 
 if __name__=="__main__":
-    dataset = CIFAR_FS_domain_shift("aquatic_mammals", "aquatic_mammals")
+    dataset = CIFARFSDomainShift("aquatic_mammals", "aquatic_mammals")
