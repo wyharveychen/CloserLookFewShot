@@ -42,7 +42,7 @@ class TransformLoader:
         transform = transforms.Compose(transform_funcs)
         return transform
 
-class DataManager:
+class DataManager(object):
     @abstractmethod
     def get_data_loader(self, data_file, aug):
         pass 
