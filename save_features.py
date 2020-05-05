@@ -7,7 +7,7 @@ import h5py
 
 import configs
 import backbone
-from data.datamgr import SimpleDataManager
+from data.datamgr import SimpleDataManager, SetDataManager
 from methods.baselinetrain import BaselineTrain
 from methods.baselinefinetune import BaselineFinetune
 from methods.protonet import ProtoNet
@@ -34,6 +34,44 @@ def save_features(model, data_loader, outfile ):
             all_feats = f.create_dataset('all_feats', [max_count] + list( feats.size()[1:]) , dtype='f')
         all_feats[count:count+feats.size(0)] = feats.data.cpu().numpy()
         all_labels[count:count+feats.size(0)] = y.cpu().numpy()
+        count = count + feats.size(0)
+
+    count_var = f.create_dataset('count', (1,), dtype='i')
+    count_var[0] = count
+
+    f.close()
+
+def save_features_pp(model, data_loader, outfile ):
+    f = h5py.File(outfile, 'w')
+    max_count = len(data_loader)* params.train_n_way*(params.n_shot + n_query)
+    all_labels = f.create_dataset('all_labels',(max_count,), dtype='i')
+    all_feats=None
+    count=0
+    for i, (x,y) in enumerate(data_loader):
+        if i%10 == 0:
+            print('{:d}/{:d}'.format(i, len(data_loader)))
+        x = x.to(device)
+        x_var = Variable(x)
+        # here we re-use the code from parse_feature:
+        x = x.contiguous().view(params.train_n_way * (params.n_shot + n_query), *x.size()[2:])
+        z_all = model.forward(x)
+        z_all = z_all.view(params.train_n_way, params.n_shot + n_query, -1)
+
+        # compute loss
+        z_support   = z_all[:, :params.n_shot]
+        z_query     = z_all[:, params.n_shot:]
+        z_support   = z_support.contiguous()
+        z_proto     = z_support.view(params.train_n_way, params.n_shot, -1 ).mean(1) # the shape of z is [n_data, n_dim]
+        z_query     = z_query.contiguous().view(params.train_n_way* n_query, -1 )
+
+        # compute features ans save
+        feats = z_all.view(params.train_n_way * (params.n_shot + n_query), -1).detach()  # detach feats we don't need it for optimization
+        # reshape to save features
+        if all_feats is None:
+            all_feats = f.create_dataset('all_feats', [max_count] + list( feats.size()[1:]) , dtype='f')
+        all_feats[count:count+feats.size(0)] = feats.data.cpu().numpy()
+        y = y.view(params.train_n_way * (params.n_shot + n_query), -1)
+        all_labels[count:count+feats.size(0)] = np.squeeze(y.cpu().numpy())
         count = count + feats.size(0)
 
     count_var = f.create_dataset('count', (1,), dtype='i')
@@ -85,12 +123,21 @@ if __name__ == '__main__':
         modelfile   = get_best_file(checkpoint_dir)
 
     if params.save_iter != -1:
-        outfile = os.path.join( checkpoint_dir.replace("checkpoints","features"), split + "_" + str(params.save_iter)+ ".hdf5") 
+        if params.protonetpp == False:
+            outfile = os.path.join( checkpoint_dir.replace("checkpoints","features"), split + "_" + str(params.save_iter)+ ".hdf5")
+        else:
+            outfile = os.path.join(checkpoint_dir.replace("checkpoints", "features"), split + "_" + str(params.save_iter) + "pp" + ".hdf5")
     else:
-        outfile = os.path.join( checkpoint_dir.replace("checkpoints","features"), split + ".hdf5") 
+        outfile = os.path.join( checkpoint_dir.replace("checkpoints","features"), split + ".hdf5")
 
-    datamgr         = SimpleDataManager(image_size, batch_size = 64)
-    data_loader      = datamgr.get_data_loader(loadfile, aug = False)
+    if params.protonetpp == False:
+        datamgr = SimpleDataManager(image_size, batch_size=64)
+        data_loader = datamgr.get_data_loader(loadfile, aug=False)
+    else:  # the SetDataloader is necessary for updating parameters
+        n_query = 4  # just a dummy value
+        save_few_shot_params = dict(n_way=params.train_n_way, n_support=params.n_shot)
+        datamgr         = SetDataManager(image_size, n_query = n_query,  **save_few_shot_params)
+        data_loader      = datamgr.get_data_loader(loadfile, aug = False)
 
     if params.method in ['relationnet', 'relationnet_softmax']:
         if params.model == 'Conv4': 
@@ -119,9 +166,15 @@ if __name__ == '__main__':
             state.pop(key)
             
     model.load_state_dict(state)
-    model.eval()
+    if params.protonetpp == True:
+        model.train()
+    else:
+        model.eval()
 
     dirname = os.path.dirname(outfile)
     if not os.path.isdir(dirname):
         os.makedirs(dirname)
-    save_features(model, data_loader, outfile)
+    if params.protonetpp == False:
+        save_features(model, data_loader, outfile)
+    else:
+        save_features_pp(model, data_loader, outfile)

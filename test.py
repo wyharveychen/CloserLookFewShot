@@ -102,7 +102,10 @@ if __name__ == '__main__':
 
     if not params.method in ['baseline', 'baseline++'] : 
         if params.save_iter != -1:
-            modelfile   = get_assigned_file(checkpoint_dir,params.save_iter)
+            if params.protonetpp == False:
+                modelfile   = get_assigned_file(checkpoint_dir,params.save_iter)
+            else:  #TODO: change later to the correct path
+                modelfile = get_assigned_file(checkpoint_dir, params.save_iter)
         else:
             modelfile   = get_best_file(checkpoint_dir)
         if modelfile is not None:
@@ -145,7 +148,10 @@ if __name__ == '__main__':
         acc_mean, acc_std = model.test_loop( novel_loader, return_std = True)
 
     else:
-        novel_file = os.path.join( checkpoint_dir.replace("checkpoints","features"), split_str +".hdf5") #defaut split = novel, but you can also test base or val classes
+        if params.protonetpp == False:
+            novel_file = os.path.join( checkpoint_dir.replace("checkpoints","features"), split_str +".hdf5") #defaut split = novel, but you can also test base or val classes
+        else:
+            novel_file = os.path.join(checkpoint_dir.replace("checkpoints", "features"), split_str + "pp" + ".hdf5")
         cl_data_file = feat_loader.init_loader(novel_file)
 
         for i in range(iter_num):
