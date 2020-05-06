@@ -20,7 +20,7 @@ from methods.protonet import ProtoNet
 from methods.matchingnet import MatchingNet
 from methods.relationnet import RelationNet
 from methods.maml import MAML
-from io_utils import model_dict, parse_args, get_resume_file, get_best_file , get_assigned_file
+from io_utils import model_dict, parse_args, get_resume_file, get_best_file , get_assigned_file, get_assigned_filepp
 
 def feature_evaluation(cl_data_file, model, n_way = 5, n_support = 5, n_query = 15, adaptation = False):
     class_list = cl_data_file.keys()
@@ -104,8 +104,8 @@ if __name__ == '__main__':
         if params.save_iter != -1:
             if params.protonetpp == False:
                 modelfile   = get_assigned_file(checkpoint_dir,params.save_iter)
-            else:  #TODO: change later to the correct path
-                modelfile = get_assigned_file(checkpoint_dir, params.save_iter)
+            else:
+                modelfile = get_assigned_filepp(checkpoint_dir, params.save_iter, params.additional_iter)
         else:
             modelfile   = get_best_file(checkpoint_dir)
         if modelfile is not None:

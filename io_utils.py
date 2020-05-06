@@ -24,6 +24,7 @@ def parse_args(script):
     parser.add_argument('--n_shot'      , default=5, type=int,  help='number of labeled data in each class, same as n_support') #baseline and baseline++ only use this parameter in finetuning, also used in proto pp save features
     parser.add_argument('--train_aug'   , action='store_true',  help='perform data augmentation or not during training ') #still required for save_features.py and test.py to find the model path correctly
     parser.add_argument('--protonetpp', default=False, type=bool, help='True for protonetplusplus, False for other cases')
+    parser.add_argument('--additional_iter', type=int, help='addtional iteration from save features')  # only used in protonetpp
 
     if script == 'train':
         parser.add_argument('--num_classes' , default=200, type=int, help='total number of classes in softmax, only used in baseline') #make it larger than the maximum label value in base class
@@ -48,6 +49,10 @@ def parse_args(script):
 
 def get_assigned_file(checkpoint_dir,num):
     assign_file = os.path.join(checkpoint_dir, '{:d}.tar'.format(num))
+    return assign_file
+
+def get_assigned_filepp(checkpoint_dir,num1, num2):
+    assign_file = os.path.join(checkpoint_dir, '{:d}_{:d}.tar'.format(num1, num2))
     return assign_file
 
 def get_resume_file(checkpoint_dir):
