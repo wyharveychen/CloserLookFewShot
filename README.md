@@ -82,6 +82,20 @@ and `nvidia-docker run -v  $(pwd):/repo closerlookfewshot [command]`,
 e.g. `nvidia-docker run -v  $(pwd):/repo closerlookfewshot python3 /repo/train.py --dataset CUB --model Conv4 --method baseline --train_aug`.
 Change the CUDA version in `10.2-cudnn7-runtime-ubuntu16.04` (`Dockerfile-gpu`) if you have another version than 10.2.
 
+## Protonetpp 
+Deal with domain shift, backbone learns novel features.
+
+### Train
+Run
+```python3 ./train.py--dataset CUB --model Conv4 --method protonet --start_epoch 0 --stop_epoch 1 --train_n_way 5 --test_n_way 5 --n_shot 5```
+
+### Save Features (backbone learn and save)
+Run
+```python3 ./save_features.py --dataset CUB --model Conv4 --method protonet --save_iter 0 --n_shot 5 --train_n_way 5 --protonetpp True --additional_iter 1```
+
+### Test (with updated backbone)
+Run
+```python3 ./test.py--dataset CUB --model Conv4 --method protonet --save_iter 0 --protonetpp True --additional_iter 1```
 
 ## References
 Our testbed builds upon several existing publicly available code. Specifically, we have modified and integrated the following code into this project:
