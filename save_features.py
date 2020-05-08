@@ -7,14 +7,18 @@ import h5py
 
 import configs
 import backbone
-from data.datamgr import SimpleDataManager
+from data.datamgr import SimpleDataManager, SetDataManager
 from methods.baselinetrain import BaselineTrain
 from methods.baselinefinetune import BaselineFinetune
 from methods.protonet import ProtoNet
 from methods.matchingnet import MatchingNet
 from methods.relationnet import RelationNet
 from methods.maml import MAML
-from io_utils import model_dict, parse_args, get_resume_file, get_best_file, get_assigned_file 
+from io_utils import model_dict, parse_args, get_resume_file, get_best_file, get_assigned_file
+import torch.optim as optim
+from methods.protonet import euclidean_dist
+import torch.nn as nn
+from methods.protonet import ProtoNet
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
@@ -40,6 +44,38 @@ def save_features(model, data_loader, outfile ):
     count_var[0] = count
 
     f.close()
+
+def learn_novel_feature(model, data_loader, maxepoch = 2):
+    optimizer = optim.Adam(model.parameters())
+    for epoch in range(1, maxepoch + 1):
+        for i, (x,y) in enumerate(data_loader):
+            optimizer.zero_grad()
+            if i%10 == 0:
+                print('{:d}/{:d}'.format(i, len(data_loader)))
+            x = x.to(device)
+            x_var = Variable(x)
+            # here we re-use the code from parse_feature:
+            x = x.contiguous().view(params.train_n_way * (params.n_shot + n_query), *x.size()[2:])
+            z_all = model.forward(x)
+            z_all = z_all.view(params.train_n_way, params.n_shot + n_query, -1)
+
+            # compute loss
+            z_support   = z_all[:, :params.n_shot]
+            z_query     = z_all[:, params.n_shot:]
+            z_support   = z_support.contiguous()
+            z_proto     = z_support.view(params.train_n_way, params.n_shot, -1 ).mean(1) # the shape of z is [n_data, n_dim]
+            z_query     = z_query.contiguous().view(params.train_n_way* n_query, -1 )
+            dists = euclidean_dist(z_query, z_proto)
+            scores = -dists
+            loss_fn = nn.CrossEntropyLoss()
+            y_query = torch.from_numpy(np.repeat(range(params.train_n_way), n_query))
+            y_query = Variable(y_query.to(device))
+            loss = loss_fn(scores, y_query)
+            loss.backward()
+            optimizer.step()
+
+    return model
+
 
 if __name__ == '__main__':
     params = parse_args('save_features')
@@ -85,12 +121,23 @@ if __name__ == '__main__':
         modelfile   = get_best_file(checkpoint_dir)
 
     if params.save_iter != -1:
-        outfile = os.path.join( checkpoint_dir.replace("checkpoints","features"), split + "_" + str(params.save_iter)+ ".hdf5") 
+        if params.protonetpp == False:
+            outfile = os.path.join( checkpoint_dir.replace("checkpoints","features"), split + "_" + str(params.save_iter)+ ".hdf5")
+        else:
+            outfile = os.path.join(checkpoint_dir.replace("checkpoints", "features"), split + "_" + str(params.save_iter) + "pp" + ".hdf5")
     else:
-        outfile = os.path.join( checkpoint_dir.replace("checkpoints","features"), split + ".hdf5") 
+        outfile = os.path.join( checkpoint_dir.replace("checkpoints","features"), split + ".hdf5")
 
-    datamgr         = SimpleDataManager(image_size, batch_size = 64)
-    data_loader      = datamgr.get_data_loader(loadfile, aug = False)
+    if params.protonetpp == False:
+        datamgr = SimpleDataManager(image_size, batch_size=64)
+        data_loader = datamgr.get_data_loader(loadfile, aug=False)
+    else:  # the SetDataloader is necessary for updating parameters
+        datamgr1 = SimpleDataManager(image_size, batch_size=64)
+        data_loader1 = datamgr1.get_data_loader(loadfile, aug=False)
+        n_query = 4  # just a dummy value
+        save_few_shot_params = dict(n_way=params.train_n_way, n_support=params.n_shot)
+        datamgr         = SetDataManager(image_size, n_query = n_query,  **save_few_shot_params)
+        data_loader      = datamgr.get_data_loader(loadfile, aug = False)
 
     if params.method in ['relationnet', 'relationnet_softmax']:
         if params.model == 'Conv4': 
@@ -104,7 +151,11 @@ if __name__ == '__main__':
     elif params.method in ['maml' , 'maml_approx']: 
        raise ValueError('MAML do not support save feature')
     else:
-        model = model_dict[params.model]()
+        if params.protonetpp == False:
+            model = model_dict[params.model]()
+        else:
+            few_shot_params = dict(n_way=params.test_n_way, n_support=params.n_shot)
+            model = ProtoNet( model_dict[params.model], **few_shot_params )
 
     if torch.cuda.is_available():
         model = model.cuda()
@@ -113,15 +164,32 @@ if __name__ == '__main__':
     state_keys = list(state.keys())
     for i, key in enumerate(state_keys):
         if "feature." in key:
-            newkey = key.replace("feature.","")  # an architecture model has attribute 'feature', load architecture feature to backbone by casting name from 'feature.trunk.xx' to 'trunk.xx'  
+            newkey = key.replace("feature.","")  # an architecture model has attribute 'feature', load architecture feature to backbone by casting name from 'feature.trunk.xx' to 'trunk.xx'
             state[newkey] = state.pop(key)
         else:
             state.pop(key)
-            
-    model.load_state_dict(state)
-    model.eval()
+    if params.protonetpp == False:
+        model.load_state_dict(state)
+    else:
+        model.feature.load_state_dict(state)
+
+    if params.protonetpp == True:
+        model.train()
+    else:
+        model.eval()
 
     dirname = os.path.dirname(outfile)
     if not os.path.isdir(dirname):
         os.makedirs(dirname)
-    save_features(model, data_loader, outfile)
+    if params.protonetpp == False:
+        save_features(model, data_loader, outfile)
+    else:
+        maxepoch = params.additional_iter # dummy value
+        model = learn_novel_feature(model, data_loader, maxepoch) # backbone learn from novel sets
+        model.eval()
+        save_features(model, data_loader1, outfile) # save features from updated backbone
+        if torch.cuda.is_available():
+            model = model.cuda()
+        outfile = os.path.join(checkpoint_dir, '{:d}_{:d}.tar'.format(params.save_iter, maxepoch))  # save model
+        torch.save({'epoch': maxepoch, 'state': model.state_dict()}, outfile)
+

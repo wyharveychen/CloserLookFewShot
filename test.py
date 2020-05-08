@@ -20,7 +20,7 @@ from methods.protonet import ProtoNet
 from methods.matchingnet import MatchingNet
 from methods.relationnet import RelationNet
 from methods.maml import MAML
-from io_utils import model_dict, parse_args, get_resume_file, get_best_file , get_assigned_file
+from io_utils import model_dict, parse_args, get_resume_file, get_best_file , get_assigned_file, get_assigned_filepp
 
 def feature_evaluation(cl_data_file, model, n_way = 5, n_support = 5, n_query = 15, adaptation = False):
     class_list = cl_data_file.keys()
@@ -102,7 +102,10 @@ if __name__ == '__main__':
 
     if not params.method in ['baseline', 'baseline++'] : 
         if params.save_iter != -1:
-            modelfile   = get_assigned_file(checkpoint_dir,params.save_iter)
+            if params.protonetpp == False:
+                modelfile   = get_assigned_file(checkpoint_dir,params.save_iter)
+            else:
+                modelfile = get_assigned_filepp(checkpoint_dir, params.save_iter, params.additional_iter)
         else:
             modelfile   = get_best_file(checkpoint_dir)
         if modelfile is not None:
@@ -145,7 +148,10 @@ if __name__ == '__main__':
         acc_mean, acc_std = model.test_loop( novel_loader, return_std = True)
 
     else:
-        novel_file = os.path.join( checkpoint_dir.replace("checkpoints","features"), split_str +".hdf5") #defaut split = novel, but you can also test base or val classes
+        if params.protonetpp == False:
+            novel_file = os.path.join( checkpoint_dir.replace("checkpoints","features"), split_str +".hdf5") #defaut split = novel, but you can also test base or val classes
+        else:
+            novel_file = os.path.join(checkpoint_dir.replace("checkpoints", "features"), split_str + "pp" + ".hdf5")
         cl_data_file = feat_loader.init_loader(novel_file)
 
         for i in range(iter_num):
