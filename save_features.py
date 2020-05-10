@@ -126,7 +126,10 @@ if __name__ == '__main__':
         else:
             outfile = os.path.join(checkpoint_dir.replace("checkpoints", "features"), split + "_" + str(params.save_iter) + "pp" + ".hdf5")
     else:
-        outfile = os.path.join( checkpoint_dir.replace("checkpoints","features"), split + ".hdf5")
+        if params.protonetpp == False:
+            outfile = os.path.join( checkpoint_dir.replace("checkpoints","features"), split + ".hdf5")
+        else:
+            outfile = os.path.join(checkpoint_dir.replace("checkpoints", "features"), split + "pp" + ".hdf5")
 
     if params.protonetpp == False:
         datamgr = SimpleDataManager(image_size, batch_size=64)
