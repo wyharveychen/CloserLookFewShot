@@ -2,3 +2,4 @@ torch==1.4.0+cpu
 torchvision==0.5.0+cpu
 Pillow
 h5py
+torchnet
