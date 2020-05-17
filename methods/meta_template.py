@@ -65,7 +65,7 @@ class MetaTemplate(nn.Module):
             loss = self.set_forward_loss( x )
             loss.backward()
             optimizer.step()
-            avg_loss = avg_loss+loss.data[0]
+            avg_loss = avg_loss+loss.item()
 
             if i % print_freq==0:
                 #print(optimizer.state_dict()['param_groups'][0]['lr'])
