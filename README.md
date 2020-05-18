@@ -24,7 +24,7 @@ To install the dependencies use `pip3 install -r requirements-cpu.txt -f https:/
 
 ## Getting started
 ### CIFAR-FS
-* Change to directory ./filelists/CIFAR-FS
+* Change to directory ./filelists/CIFARFS
 * run `source ./download_Cifar.sh`
 
 ### CUB
@@ -91,7 +91,7 @@ Deal with domain shift, backbone learns novel features.
 
 ### Train
 Run
-```python3 ./train.py--dataset CUB --model Conv4 --method protonet --start_epoch 0 --stop_epoch 1 --train_n_way 5 --test_n_way 5 --n_shot 5```
+```python3 ./train.py --dataset CUB --model Conv4 --method protonet --start_epoch 0 --stop_epoch 1 --train_n_way 5 --test_n_way 5 --n_shot 5```
 
 ### Save Features (backbone learn and save)
 Run
