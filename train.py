@@ -54,7 +54,6 @@ if __name__=='__main__':
     np.random.seed(10)
     params = parse_args('train')
 
-
     if params.dataset == 'cross':
         base_file = configs.data_dir['miniImagenet'] + 'all.json' 
         val_file   = configs.data_dir['CUB'] + 'val.json' 
@@ -68,6 +67,8 @@ if __name__=='__main__':
     if 'Conv' in params.model:
         if params.dataset in ['omniglot', 'cross_char']:
             image_size = 28
+        elif params.dataset == "CIFARFS":
+            image_size = 32
         else:
             image_size = 84
     else:
