@@ -23,9 +23,10 @@ year={2019}
 To install the dependencies use `pip3 install -r requirements-cpu.txt -f https://download.pytorch.org/whl/torch_stable.html` or `pip3 install -r requirements-gpu.txt`.
 
 ## Getting started
-### CIFAR-FS
+### CIFARFS
 * Change to directory ./filelists/CIFARFS
 * run `source ./download_Cifar.sh`
+* run `python3 create-dataset.py` which you can edit to create a different dataset by choosing other classes
 
 ### CUB
 * Change directory to `./filelists/CUB`
