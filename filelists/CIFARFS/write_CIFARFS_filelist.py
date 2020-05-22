@@ -26,6 +26,8 @@ def load_data(file):
             data = u.load()
         return data
 
+print("### splitting data into superclasses")
+
 d1 = load_data(os.path.join(
     base_path,
         'cifar-100-python/test'))
@@ -55,6 +57,7 @@ for i in range(number_of_superclasses):
         }, f)
 
 
+print("### writing images to files")
 # 1. Write pickled images to files (Structure: Superclass >> Class >> Images.jpg
 fine_label_names = load_data(join(base_path, 'meta'))["fine_label_names"]
 assert len(fine_label_names) == 100
@@ -86,3 +89,5 @@ with open(f"class_name_to_label.pickle", 'wb') as f:
 
 with open(f"class_name_to_path.pickle", 'wb') as f:
     pickle.dump(class_name_to_path, f)
+
+print("### Done")
