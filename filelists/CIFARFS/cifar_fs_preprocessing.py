@@ -1,6 +1,3 @@
-# Dataloader of Gidaris & Komodakis, CVPR 2018
-# Adapted from:
-# https://github.com/gidariss/FewShotWithoutForgetting/blob/master/dataloader.py
 from __future__ import print_function
 
 import os

@@ -1,5 +1,3 @@
-import random
-import numpy as np
 import pickle
 import os
 from os import listdir
@@ -9,7 +7,7 @@ import json
 
 
 base_path = os.getcwd()
-
+cifar_path = join(base_path, "CloserLookFewShot/filelists/CIFARFS/")
 def write_json(class_list, name, class_name_to_path, class_name_to_label):
     d = defaultdict(list)
     d["label_names"] = list(class_name_to_path.keys())
@@ -20,7 +18,7 @@ def write_json(class_list, name, class_name_to_path, class_name_to_label):
             if ".jpg" in file:
                 d["image_labels"].append(int(label))
                 d["image_names"].append(join(path, file))
-    with open(f"{name}.json", 'w') as f:
+    with open(join(cifar_path, f"{name}.json"), 'w') as f:
         json.dump(d, f)
 
 def check_input(class_list, all_classes):
@@ -35,9 +33,10 @@ def generate_cross_domain_split(base_classes, val_classes, novel_classes):
     :param novel_classes: the list of classes to be used for testing
     :return:
     """
-    with open("class_name_to_label.pickle", 'rb') as f:
+    print(cifar_path)
+    with open(join(cifar_path, "class_name_to_label.pickle"), 'rb') as f:
         class_name_to_label = pickle.load(f)
-    with open("class_name_to_path.pickle", 'rb') as f:
+    with open(join(cifar_path, "class_name_to_path.pickle"), 'rb') as f:
         class_name_to_path = pickle.load(f)
     class_list = list(class_name_to_path.keys())
     check_input(base_classes, class_list)

@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
-git clone https://github.com/MkuuWaUjinga/Cifar100BySuperclass.git
+wget https://www.cs.toronto.edu/~kriz/cifar-100-python.tar.gz
+tar -xvzf cifar-100-python.tar.gz
 python3 write_CIFARFS_filelist.py
