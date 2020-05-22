@@ -27,13 +27,13 @@ def load_data(file):
         return data
 
 d1 = load_data(os.path.join(
-        file_list_path,
+    base_path,
         'cifar-100-python/test'))
 d2 = load_data(os.path.join(
-        file_list_path,
+    base_path,
     'cifar-100-python/train'))
 meta = load_data(os.path.join(
-        file_list_path,
+    base_path,
     'cifar-100-python/meta'))
 
 number_of_superclasses = 20
