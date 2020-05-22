@@ -40,6 +40,7 @@ number_of_superclasses = 20
 fine_labels = np.concatenate((np.array(d1['fine_labels']), np.array(d2['fine_labels'])))
 data = np.concatenate((np.array(d1['data']), np.array(d2['data'])))
 coarse_labels = np.concatenate((np.array(d1['coarse_labels']), np.array(d2['coarse_labels'])))
+Path(data_path).mkdir(parents=True, exist_ok=True)
 for i in range(number_of_superclasses):
     superclass_mask = coarse_labels == i
     y_of_superclass = fine_labels[superclass_mask]
