@@ -1,5 +1,6 @@
 from os import listdir
 from os.path import isdir, join
+import numpy as np
 import os
 from PIL import Image
 import pickle
@@ -24,6 +25,34 @@ def load_data(file):
             u.encoding = 'latin1'
             data = u.load()
         return data
+
+d1 = load_data(os.path.join(
+        file_list_path,
+        'cifar-100-python/test'))
+d2 = load_data(os.path.join(
+        file_list_path,
+    'cifar-100-python/train'))
+meta = load_data(os.path.join(
+        file_list_path,
+    'cifar-100-python/meta'))
+
+number_of_superclasses = 20
+fine_labels = np.concatenate((np.array(d1['fine_labels']), np.array(d2['fine_labels'])))
+data = np.concatenate((np.array(d1['data']), np.array(d2['data'])))
+coarse_labels = np.concatenate((np.array(d1['coarse_labels']), np.array(d2['coarse_labels'])))
+for i in range(number_of_superclasses):
+    superclass_mask = coarse_labels == i
+    y_of_superclass = fine_labels[superclass_mask]
+    assert len(y_of_superclass) == 3000 # 5 * 600
+    x_of_superclass = data[superclass_mask, :]
+    superclass_name = meta["coarse_label_names"][i]
+    with open(join(data_path, f"superclass_{superclass_name}.pickle"), 'wb') as f:
+        pickle.dump({
+            "superclass": superclass_name,
+            "labels": y_of_superclass,
+            "data": x_of_superclass
+        }, f)
+
 
 # 1. Write pickled images to files (Structure: Superclass >> Class >> Images.jpg
 fine_label_names = load_data(join(base_path, 'meta'))["fine_label_names"]
