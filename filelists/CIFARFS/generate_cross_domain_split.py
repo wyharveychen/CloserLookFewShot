@@ -33,6 +33,7 @@ def generate_cross_domain_split(base_classes, val_classes, novel_classes):
     :param novel_classes: the list of classes to be used for testing
     :return:
     """
+    print(cifar_path)
     with open(join(cifar_path, "class_name_to_label.pickle"), 'rb') as f:
         class_name_to_label = pickle.load(f)
     with open(join(cifar_path, "class_name_to_path.pickle"), 'rb') as f:
