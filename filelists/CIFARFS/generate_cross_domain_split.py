@@ -7,7 +7,7 @@ import json
 
 
 base_path = os.getcwd()
-cifar_path = join(base_path, "filelists/CIFARFS/")
+cifar_path = join(base_path, "CloserLookFewShot/filelists/CIFARFS/")
 def write_json(class_list, name, class_name_to_path, class_name_to_label):
     d = defaultdict(list)
     d["label_names"] = list(class_name_to_path.keys())
