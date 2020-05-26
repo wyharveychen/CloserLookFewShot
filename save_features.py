@@ -55,20 +55,20 @@ def learn_novel_feature(model, data_loader, maxepoch = 2):
             x = x.to(device)
             x_var = Variable(x)
             # here we re-use the code from parse_feature:
-            x = x.contiguous().view(params.train_n_way * (params.n_shot + n_query), *x.size()[2:])
+            x = x.contiguous().view(params.test_n_way * (params.n_shot + n_query), *x.size()[2:])
             z_all = model.forward(x)
-            z_all = z_all.view(params.train_n_way, params.n_shot + n_query, -1)
+            z_all = z_all.view(params.test_n_way, params.n_shot + n_query, -1)
 
             # compute loss
             z_support   = z_all[:, :params.n_shot]
             z_query     = z_all[:, params.n_shot:]
             z_support   = z_support.contiguous()
-            z_proto     = z_support.view(params.train_n_way, params.n_shot, -1 ).mean(1) # the shape of z is [n_data, n_dim]
-            z_query     = z_query.contiguous().view(params.train_n_way* n_query, -1 )
+            z_proto     = z_support.view(params.test_n_way, params.n_shot, -1 ).mean(1) # the shape of z is [n_data, n_dim]
+            z_query     = z_query.contiguous().view(params.test_n_way* n_query, -1 )
             dists = euclidean_dist(z_query, z_proto)
             scores = -dists
             loss_fn = nn.CrossEntropyLoss()
-            y_query = torch.from_numpy(np.repeat(range(params.train_n_way), n_query))
+            y_query = torch.from_numpy(np.repeat(range(params.test_n_way), n_query))
             y_query = Variable(y_query.to(device))
             loss = loss_fn(scores, y_query)
             loss.backward()
@@ -138,7 +138,7 @@ if __name__ == '__main__':
         datamgr1 = SimpleDataManager(image_size, batch_size=64)
         data_loader1 = datamgr1.get_data_loader(loadfile, aug=False)
         n_query = 4  # just a dummy value
-        save_few_shot_params = dict(n_way=params.train_n_way, n_support=params.n_shot)
+        save_few_shot_params = dict(n_way=params.test_n_way, n_support=params.n_shot)
         datamgr         = SetDataManager(image_size, n_query = n_query,  **save_few_shot_params)
         data_loader      = datamgr.get_data_loader(loadfile, aug = False)
 
