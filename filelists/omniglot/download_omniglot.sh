@@ -14,6 +14,6 @@ mv $DATADIR/images_evaluation/* $DATADIR/
 rmdir $DATADIR/images_background
 rmdir $DATADIR/images_evaluation
 
-python rot_omniglot.py
-python write_omniglot_filelist.py
-python write_cross_char_base_filelist.py
+python3 rot_omniglot.py
+python3 write_omniglot_filelist.py
+python3 write_cross_char_base_filelist.py

@@ -1,0 +1,6 @@
+FROM nvidia/cuda:10.2-cudnn7-runtime-ubuntu16.04
+
+RUN apt-get update && apt-get install -y python3 python3-pip wget
+WORKDIR /repo
+COPY requirements-gpu.txt requirements-gpu.txt
+RUN pip3 install -r requirements-gpu.txt

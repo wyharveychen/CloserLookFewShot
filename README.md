@@ -17,10 +17,17 @@ year={2019}
 
 ## Enviroment
  - Python3
- - [Pytorch](http://pytorch.org/) before 0.4 (for newer vesion, please see issue #3 )
+ - [Pytorch](http://pytorch.org/) >= 1.0
  - json
 
+To install the dependencies use `pip3 install -r requirements-cpu.txt -f https://download.pytorch.org/whl/torch_stable.html` or `pip3 install -r requirements-gpu.txt`.
+
 ## Getting started
+### CIFARFS
+* Change to directory ./filelists/CIFARFS
+* run `source ./download_Cifar.sh`
+* run `python3 create-dataset.py` which you can edit to create a different dataset by choosing other classes
+
 ### CUB
 * Change directory to `./filelists/CUB`
 * run `source ./download_CUB.sh`
@@ -52,7 +59,7 @@ See test.json for reference
 
 ## Train
 Run
-```python ./train.py --dataset [DATASETNAME] --model [BACKBONENAME] --method [METHODNAME] [--OPTIONARG]```
+```python3 ./train.py --dataset [DATASETNAME] --model [BACKBONENAME] --method [METHODNAME] [--OPTIONARG]```
 
 For example, run `python ./train.py --dataset miniImagenet --model Conv4 --method baseline --train_aug`  
 Commands below follow this example, and please refer to io_utils.py for additional options.
@@ -60,15 +67,26 @@ Commands below follow this example, and please refer to io_utils.py for addition
 ## Save features
 Save the extracted feature before the classifaction layer to increase test speed. This is not applicable to MAML, but are required for other methods.
 Run
-```python ./save_features.py --dataset miniImagenet --model Conv4 --method baseline --train_aug```
+```python3 ./save_features.py --dataset miniImagenet --model Conv4 --method baseline --train_aug```
 
 ## Test
 Run
-```python ./test.py --dataset miniImagenet --model Conv4 --method baseline --train_aug```
+```python3 ./test.py --dataset miniImagenet --model Conv4 --method baseline --train_aug```
 
 ## Results
 * The test results will be recorded in `./record/results.txt`
 * For all the pre-computed results, please see `./record/few_shot_exp_figures.xlsx`. This will be helpful for including your own results for a fair comparison.
+
+## Docker
+If you want to use Docker, build the container with `docker build -t closerlookfewshot .`
+and execute commands with `docker run -v  $(pwd):/repo closerlookfewshot [command]`,
+e.g. `docker run -v  $(pwd):/repo closerlookfewshot python3 /repo/train.py --dataset CUB --model Conv4 --method baseline --train_aug`.
+
+If you have a GPU and CUDA and cudnn installed, use `nvidia-docker build -t closerlookfewshot -f Dockerfile-gpu .`
+and `nvidia-docker run -v  $(pwd):/repo closerlookfewshot [command]`,
+e.g. `nvidia-docker run -v  $(pwd):/repo closerlookfewshot python3 /repo/train.py --dataset CUB --model Conv4 --method baseline --train_aug`.
+Change the CUDA version in `10.2-cudnn7-runtime-ubuntu16.04` (`Dockerfile-gpu`) if you have another version than 10.2.
+
 
 ## References
 Our testbed builds upon several existing publicly available code. Specifically, we have modified and integrated the following code into this project:

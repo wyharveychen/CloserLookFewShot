@@ -17,7 +17,9 @@ from methods.protonet import ProtoNet
 from methods.matchingnet import MatchingNet
 from methods.relationnet import RelationNet
 from methods.maml import MAML
-from io_utils import model_dict, parse_args, get_resume_file  
+from io_utils import model_dict, parse_args, get_resume_file
+
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 def train(base_loader, val_loader, model, optimization, start_epoch, stop_epoch, params):    
     if optimization == 'Adam':
@@ -52,7 +54,6 @@ if __name__=='__main__':
     np.random.seed(10)
     params = parse_args('train')
 
-
     if params.dataset == 'cross':
         base_file = configs.data_dir['miniImagenet'] + 'all.json' 
         val_file   = configs.data_dir['CUB'] + 'val.json' 
@@ -66,6 +67,8 @@ if __name__=='__main__':
     if 'Conv' in params.model:
         if params.dataset in ['omniglot', 'cross_char']:
             image_size = 28
+        elif params.dataset == "CIFARFS":
+            image_size = 32
         else:
             image_size = 84
     else:
@@ -153,7 +156,7 @@ if __name__=='__main__':
     else:
        raise ValueError('Unknown method')
 
-    model = model.cuda()
+    model = model.to(device)
 
     params.checkpoint_dir = '%s/checkpoints/%s/%s_%s' %(configs.save_dir, params.dataset, params.model, params.method)
     if params.train_aug:
