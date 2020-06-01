@@ -10,14 +10,20 @@ import torch.nn.functional as F
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 class BaselineTrain(nn.Module):
-    def __init__(self, model_func, num_class, loss_type = 'softmax'):
+    def __init__(self, model_func, num_class, dataset, loss_type = 'softmax'):
         super(BaselineTrain, self).__init__()
         self.feature    = model_func()
         if loss_type == 'softmax':
-            self.classifier = nn.Linear(self.feature.final_feat_dim, num_class)
+            if dataset == 'CIFARFS':
+                self.classifier = nn.Linear(256, num_class)
+            else:
+                self.classifier = nn.Linear(self.feature.final_feat_dim, num_class)
             self.classifier.bias.data.fill_(0)
         elif loss_type == 'dist': #Baseline ++
-            self.classifier = backbone.distLinear(self.feature.final_feat_dim, num_class)
+            if dataset == 'CIFARFS':
+                self.classifier = backbone.distLinear(256, num_class)
+            else:
+                self.classifier = backbone.distLinear(self.feature.final_feat_dim, num_class)
         self.loss_type = loss_type  #'softmax' #'dist'
         self.num_class = num_class
         self.loss_fn = nn.CrossEntropyLoss()
