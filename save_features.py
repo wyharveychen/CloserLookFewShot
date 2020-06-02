@@ -139,7 +139,7 @@ if __name__ == '__main__':
         data_loader1 = datamgr1.get_data_loader(loadfile, aug=False)
         n_query = 4  # just a dummy value
         save_few_shot_params = dict(n_way=params.test_n_way, n_support=params.n_shot)
-        datamgr         = SetDataManager_small(image_size, n_query = n_query, n_eposide= 20//params.additional_iter,  **save_few_shot_params)
+        datamgr         = SetDataManager_small(image_size, n_query = n_query, n_eposide= 60//params.additional_iter,  **save_few_shot_params)
         data_loader      = datamgr.get_data_loader(loadfile, aug = False)
 
     if params.method in ['relationnet', 'relationnet_softmax']:
