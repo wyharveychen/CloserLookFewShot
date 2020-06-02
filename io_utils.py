@@ -74,7 +74,7 @@ def get_best_file(checkpoint_dir):
         return get_resume_file(checkpoint_dir)
 
 def get_best_filepp(checkpoint_dir, add_iter):
-    best_file = os.path.join(checkpoint_dir, '-1_{}' +'.tar'.format(add_iter))
+    best_file = os.path.join(checkpoint_dir, '-1_{}.tar'.format(add_iter))
     if os.path.isfile(best_file):
         return best_file
     else:
