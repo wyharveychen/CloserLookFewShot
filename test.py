@@ -17,6 +17,7 @@ from data.datamgr import SetDataManager
 from methods.baselinetrain import BaselineTrain
 from methods.baselinefinetune import BaselineFinetune
 from methods.protonet import ProtoNet
+from methods.protonetn import ProtoNetN
 from methods.matchingnet import MatchingNet
 from methods.relationnet import RelationNet
 from methods.maml import MAML
@@ -63,6 +64,8 @@ if __name__ == '__main__':
         model           = BaselineFinetune( model_dict[params.model], loss_type = 'dist', **few_shot_params )
     elif params.method == 'protonet':
         model           = ProtoNet( model_dict[params.model], **few_shot_params )
+    elif params.method == 'protonetn':
+        model           = ProtoNetN( model_dict[params.model], **few_shot_params )
     elif params.method == 'matchingnet':
         model           = MatchingNet( model_dict[params.model], **few_shot_params )
     elif params.method in ['relationnet', 'relationnet_softmax']:
@@ -151,7 +154,22 @@ if __name__ == '__main__':
             model.task_update_num = 100 #We perform adaptation on MAML simply by updating more times.
         model.eval()
         acc_mean, acc_std = model.test_loop( novel_loader, return_std = True)
+    elif params.method == 'protonetn':
+        if 'Conv' in params.model:
+            if params.dataset in ['omniglot', 'cross_char']:
+                image_size = 28
+            elif params.dataset == "CIFARFS":
+                image_size = 32
+            else:
+                image_size = 84
+        else:
+            image_size = 224
 
+        loadfile = configs.data_dir[params.dataset] + split + '.json'
+        datamgr = SetDataManager(image_size, n_eposide=iter_num, n_query=15, **few_shot_params)
+        novel_loader = datamgr.get_data_loader(loadfile, aug=False)
+
+        acc_mean, acc_std = model.test_loop2( novel_loader, modelfile, params.new_iter, adaptation = params.adaptation)
     else:
         if params.protonetpp == False:
             novel_file = os.path.join( checkpoint_dir.replace("checkpoints","features"), split_str +".hdf5") #defaut split = novel, but you can also test base or val classes

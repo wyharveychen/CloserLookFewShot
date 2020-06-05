@@ -44,7 +44,7 @@ class MetaTemplate(nn.Module):
 
         return z_support, z_query
 
-    def correct(self, x):       
+    def correct(self, x):
         scores = self.set_forward(x)
         y_query = np.repeat(range( self.n_way ), self.n_query )
 
