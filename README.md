@@ -87,26 +87,29 @@ and `nvidia-docker run -v  $(pwd):/repo closerlookfewshot [command]`,
 e.g. `nvidia-docker run -v  $(pwd):/repo closerlookfewshot python3 /repo/train.py --dataset CUB --model Conv4 --method baseline --train_aug`.
 Change the CUDA version in `10.2-cudnn7-runtime-ubuntu16.04` (`Dockerfile-gpu`) if you have another version than 10.2.
 
-## Protonetpp 
-Deal with domain shift, backbone learns novel features.
+## Protonetn
+Deal with domain shift, backbone learns novel features. Also note that protonetn does not support 1-shot learning, at least two is needed for each class for further adaptation.
 
 ### Prepare datasets
-3-way train, 2-way test
-base_classes = ["beaver", "dolphin", "otter"]; 
-val_classes = ["beaver", "dolphin", "otter"];
-novel_classes = ["seal", "whale"]
+3-way train, 3-way test
+base_classes = ["poppy", "rose", "tulip", "palm_tree", "pine_tree", "oak_tree", "willow_tree"];
+val_classes = ["orchid", "sunflower", "maple_tree"];
+novel_classes = ["apple", "pear", "mushroom"];
 
 ### Train
 Run
-```python3 ./train.py --dataset CIFARFS --model Conv4 --method protonet --start_epoch 0 --stop_epoch 1 --train_n_way 3 --test_n_way 2 --n_shot 1```
+```python3 ./train.py --dataset CIFARFS --model Conv4 --method protonetn --start_epoch 0 --stop_epoch 100 --train_n_way 3 --test_n_way 3 --n_shot 5```
 
 ### Save Features (backbone learn and save)
+There is no save features for this case, protonetn without adaptation is just train and test with protonet, and skip the save feature step, the test.py with read images directly. 
+
+### Test (with updated backbone, should have same performance as protonet)
 Run
-```python3 ./save_features.py --dataset CIFARFS --model Conv4 --method protonet --save_iter 0 --n_shot 1 --train_n_way 3 --test_n_way 2 --protonetpp True --additional_iter 1```
+```python3 ./train.py --dataset CIFARFS --model Conv4 --method protonetn --save_iter 99 --test_n_way 3 --train_n_way 3 --n_shot 5```
 
 ### Test (with updated backbone)
 Run
-```python3 ./test.py --dataset CIFARFS --model Conv4 --method protonet --save_iter 0 --protonetpp True --additional_iter 1 --test_n_way 2 --train_n_way 3 --n_shot 1```
+```python3 ./train.py --dataset CIFARFS --model Conv4 --method protonetn --save_iter 99 --test_n_way 3 --train_n_way 3 --n_shot 5 --adaptation --new_iter 5```
 
 ## References
 Our testbed builds upon several existing publicly available code. Specifically, we have modified and integrated the following code into this project:
