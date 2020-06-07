@@ -21,7 +21,7 @@ from methods.protonetn import ProtoNetN
 from methods.matchingnet import MatchingNet
 from methods.relationnet import RelationNet
 from methods.maml import MAML
-from io_utils import model_dict, parse_args, get_resume_file, get_best_file , get_assigned_file, get_assigned_filepp, get_best_filepp
+from io_utils import model_dict, parse_args, get_resume_file, get_best_file , get_assigned_file
 
 def feature_evaluation(cl_data_file, model, n_way = 5, n_support = 5, n_query = 15, adaptation = False):
     class_list = cl_data_file.keys()
@@ -105,15 +105,10 @@ if __name__ == '__main__':
 
     if not params.method in ['baseline', 'baseline++'] : 
         if params.save_iter != -1:
-            if params.protonetpp == False:
-                modelfile   = get_assigned_file(checkpoint_dir,params.save_iter)
-            else:
-                modelfile = get_assigned_filepp(checkpoint_dir, params.save_iter, params.additional_iter)
+            modelfile   = get_assigned_file(checkpoint_dir,params.save_iter)
         else:
-            if params.protonetpp == False:
-                modelfile   = get_best_file(checkpoint_dir)
-            else:
-                modelfile = get_best_filepp(checkpoint_dir, params.additional_iter)
+            modelfile   = get_best_file(checkpoint_dir)
+
         if modelfile is not None:
             tmp = torch.load(modelfile)
             model.load_state_dict(tmp['state'])
@@ -171,10 +166,7 @@ if __name__ == '__main__':
 
         acc_mean, acc_std = model.test_loop2( novel_loader, modelfile, params.new_iter, adaptation = params.adaptation)
     else:
-        if params.protonetpp == False:
-            novel_file = os.path.join( checkpoint_dir.replace("checkpoints","features"), split_str +".hdf5") #defaut split = novel, but you can also test base or val classes
-        else:
-            novel_file = os.path.join(checkpoint_dir.replace("checkpoints", "features"), split_str + "pp" + ".hdf5")
+        novel_file = os.path.join( checkpoint_dir.replace("checkpoints","features"), split_str +".hdf5") #defaut split = novel, but you can also test base or val classes
         cl_data_file = feat_loader.init_loader(novel_file)
 
         for i in range(iter_num):
